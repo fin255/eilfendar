@@ -107,6 +107,17 @@ body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georg
 .sr-main{font-size:14px;color:var(--ink);}
 .sr-det{font-size:12px;color:var(--ink3);font-style:italic;margin-top:2px;}
 mark{background:rgba(186,117,23,0.25);color:inherit;}
+/* CHAR PICKER */
+.picker-item{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border2);}
+.picker-item:last-child{border-bottom:none;}
+.picker-item:hover{background:var(--paper3);}
+.picker-item.already{opacity:0.4;cursor:default;}
+.sb-char{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border2);animation:fadeIn 0.2s ease;}
+.sb-char:last-child{border-bottom:none;}
+.sb-char-name{font-family:'Playfair Display',serif;font-size:13px;font-weight:600;}
+.sb-char-remove{background:none;border:none;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink4);opacity:0;padding:2px 4px;}
+.sb-char:hover .sb-char-remove{opacity:1;}
+.sb-char-remove:hover{color:var(--accent)!important;}
 /* FORMS */
 .add-section{margin-top:2rem;border-top:2px solid var(--ink);padding-top:1.5rem;}
 .add-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:600;margin-bottom:1rem;}
@@ -211,7 +222,14 @@ select{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.04e
       </div>
     </div>
     <div>
-      <div class="sec-head">Characters</div>
+      <div class="sec-head">
+        <span>Characters in session</span>
+        <button class="btn btn-sm" onclick="toggleCharPicker()">+ Add character</button>
+      </div>
+      <div id="char-picker" style="display:none;margin-bottom:1rem;position:relative;">
+        <input type="text" id="char-search" placeholder="Search characters…" oninput="filterCharPicker()" autocomplete="off" style="margin-bottom:0;">
+        <div id="char-picker-list" style="background:var(--paper2);border:1px solid var(--border);max-height:200px;overflow-y:auto;"></div>
+      </div>
       <div id="sb-chars"></div>
       <div style="margin-top:1.5rem">
         <div class="sec-head">Active missions</div>
@@ -430,7 +448,8 @@ const DEFAULTS = {
     {id:5,name:'The Regime',type:'faction',body:'The old leaders of Eilfendar and the main cause for the War of Greatest Calamity.'},
     {id:6,name:'The War of Greatest Calamity',type:'lore',body:'The worst war to have occurred across the globe.'},
     {id:7,name:'Strausberg',type:'place',body:"Velma and Gunther's home town, north of 'Berlin'."},
-  ]
+  ],
+  sessionChars:{'2':[1,2,3],'3':[1,2,3,4]}
 };
 
 // ── JSONBIN SYNC ─────────────────────────────────
@@ -483,6 +502,7 @@ async function loadFromCloud() {
       await pushToCloud(state);
     } else {
       state = data;
+      if(!state.sessionChars) state.sessionChars={};
     }
   } catch(e) {
     console.warn('Cloud load failed, using defaults:', e);
@@ -539,15 +559,62 @@ function renderEvents(){
     </div>`).join(''):'<div class="empty-state">No events yet for this session.</div>';
 }
 
+function getSessionCharIds(){
+  if(!state.sessionChars) state.sessionChars={};
+  if(!state.sessionChars[currentSession]) state.sessionChars[currentSession]=[];
+  return state.sessionChars[currentSession];
+}
+
 function renderSidebar(){
-  document.getElementById('sb-chars').innerHTML=state.characters.map(c=>`
-    <div class="mini-char"><span style="font-family:'Playfair Display',serif;font-weight:600">${c.name}</span><span class="tag tag-${c.status}">${c.status}</span></div>`
-  ).join('')||'<div class="empty-state">No characters yet.</div>';
+  const ids=getSessionCharIds();
+  const chars=ids.map(id=>state.characters.find(c=>c.id===id)).filter(Boolean);
+  document.getElementById('sb-chars').innerHTML=chars.length?chars.map(c=>`
+    <div class="sb-char">
+      <div>
+        <div class="sb-char-name">${c.name}</div>
+        <span class="tag tag-${c.status}" style="margin-top:3px;display:inline-block">${c.status}</span>
+        ${c.location?`<span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink4);margin-left:6px">📍 ${c.location}</span>`:''}
+      </div>
+      <button class="sb-char-remove" onclick="removeCharFromSession(${c.id})">✕</button>
+    </div>`).join(''):'<div class="empty-state">No characters added yet.</div>';
   document.getElementById('sb-missions').innerHTML=state.missions.filter(m=>m.status==='active').map(m=>`
     <div class="mini-mission">${m.title}</div>`).join('')||'<div class="empty-state">No active missions.</div>';
   document.getElementById('sb-threads').innerHTML=state.threads.filter(t=>!t.resolved).map(t=>`
     <div class="mini-thread"><span style="color:var(--amber);flex-shrink:0">?</span>${t.text}</div>`
   ).join('')||'<div class="empty-state">No open threads.</div>';
+}
+
+function toggleCharPicker(){
+  const p=document.getElementById('char-picker');
+  const open=p.style.display==='none';
+  p.style.display=open?'block':'none';
+  if(open){document.getElementById('char-search').value='';renderCharPicker();document.getElementById('char-search').focus();}
+}
+
+function renderCharPicker(filter=''){
+  const ids=getSessionCharIds();
+  const list=document.getElementById('char-picker-list');
+  const chars=state.characters.filter(c=>!filter||c.name.toLowerCase().includes(filter.toLowerCase())||c.race.toLowerCase().includes(filter.toLowerCase()));
+  list.innerHTML=chars.length?chars.map(c=>{
+    const already=ids.includes(c.id);
+    return `<div class="picker-item ${already?'already':''}" onclick="${already?'':'addCharToSession('+c.id+')'}">
+      <span>${c.name} <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink4)">${c.race||''}</span></span>
+      <span class="tag tag-${c.status}">${already?'added':c.status}</span>
+    </div>`;
+  }).join(''):'<div style="padding:8px 12px;font-size:13px;color:var(--ink4);font-style:italic">No characters found.</div>';
+}
+
+function filterCharPicker(){renderCharPicker(document.getElementById('char-search').value);}
+
+function addCharToSession(id){
+  const ids=getSessionCharIds();
+  if(!ids.includes(id)){ids.push(id);saveState();renderSidebar();renderCharPicker(document.getElementById('char-search').value);}
+}
+
+function removeCharFromSession(id){
+  if(!state.sessionChars) return;
+  state.sessionChars[currentSession]=(state.sessionChars[currentSession]||[]).filter(x=>x!==id);
+  saveState();renderSidebar();
 }
 
 function renderSessions(){renderSessionTabs();renderEvents();renderSidebar();}
@@ -792,6 +859,16 @@ function copyDiscord(){
   });
 }
 
+// close char picker on outside click
+document.addEventListener('click', e => {
+  const picker = document.getElementById('char-picker');
+  const btn = e.target.closest('button');
+  if (picker && picker.style.display !== 'none') {
+    if (!picker.contains(e.target) && !(btn && btn.getAttribute('onclick') && btn.getAttribute('onclick').includes('toggleCharPicker'))) {
+      picker.style.display = 'none';
+    }
+  }
+});
 // ── INIT ─────────────────────────────────────────
 function renderAll(){renderSessions();renderChars();renderMissions();renderThreads();renderLore();}
 loadFromCloud();
