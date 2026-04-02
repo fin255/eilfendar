@@ -141,15 +141,27 @@ select{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.04e
 .mini-thread{display:flex;gap:6px;padding:5px 0;border-bottom:1px solid var(--border2);font-size:12px;font-style:italic;color:var(--ink3);}
 .mini-thread:last-child{border-bottom:none;}
 .empty-state{color:var(--ink4);font-style:italic;font-size:14px;padding:1rem 0;}
+
+.sync-status{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.06em;padding:2px 8px;}
+.sync-status.saving{color:var(--amber);}
+.sync-status.saved{color:var(--teal);}
+.sync-status.error{color:var(--accent);}
 </style>
 </head>
 <body>
+<div id="loading-overlay" style="display:flex;position:fixed;inset:0;background:var(--paper);z-index:500;align-items:center;justify-content:center;flex-direction:column;gap:1rem;">
+  <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:600;">Eilf<span style="color:#8b2020">en</span>dar</div>
+  <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.1em;color:#9c9288;">Loading campaign notes…</div>
+</div>
 <div class="grain"></div>
 <div class="page">
 
 <div class="masthead">
   <div class="campaign-title">Eilf<span>en</span>dar</div>
   <div class="session-badge" id="session-badge">Campaign Notes</div>
+</div>
+<div style="display:flex;justify-content:flex-end;margin-bottom:4px;min-height:18px;">
+  <span id="sync-status" class="sync-status"></span>
 </div>
 <div class="lore-strip">
   <div><strong>Setting:</strong> <span>Fake Germany under occupation</span></div>
@@ -387,6 +399,10 @@ const DEFAULTS = {
     {t:'npc',m:'Met Darfin Dewise & Beatrice',d:'Darfin leads Freidenburg and has a mission for us. Beatrice fed us well.'},
     {t:'note',m:'Spy Elf in Freidenburg',d:'Someone in camp is reporting to an unknown party.'},
     {t:'loc',m:'Meeting room',d:'Session ends here. Darfin to brief us on the mission next session.'},
+  ],"3":[
+    {t:'action',m:"Darfin briefs us",d:'We get given the details of the mission — recover notes secured in an Osterian facility.'},
+    {t:'loc',m:'The Warehouse',d:"Multiple guards and two regular patrols coming and going from the warehouse."},
+    {t:'action',m:'Breaking in',d:"Viktor fails to sneak in making a scene. In an attempt to get away he burns the door. Tod and Velma see the chaos and break in to help him."},
   ]},
   characters:[
     {id:1,name:'Dieter',race:'Human',status:'ally',desc:'Old resistance man. Lost the rebel list. Knows the tunnels intimately.',notes:'Our neighbour. Trustworthy but dangerously careless with documents.',location:'Freidenburg'},
@@ -396,30 +412,98 @@ const DEFAULTS = {
     {id:5,name:'Spy Elf',race:'Elf',status:'unknown',desc:'Hidden somewhere in Freidenburg among refugees.',notes:'Identity unknown. Who are they reporting to? Top priority to uncover.',location:'Freidenburg (hidden)'},
   ],
   missions:[
-    {id:1,title:'Warn the rebels — the list is lost',body:'Dieter lost a list of resistance members. The party escorted him through the sewers to reach rebels before the Osterians act on it.',status:'active',giver:'Dieter',session:'2'},
-    {id:2,title:"Darfin's mission — TBC",body:'Darfin Dewise, leader of Freidenburg, has a mission waiting. Details to be revealed in the meeting room next session.',status:'active',giver:'Darfin Dewise',session:'2'},
+    {id:1,title:'Warn the rebels — the list is lost',body:'Dieter lost a list of resistance members. The party escorted him through the sewers to reach rebels before the Osterians act on it.',status:'complete',giver:'Dieter',session:'2'},
+    {id:2,title:"Darfin's mission — TBC",body:'Darfin Dewise, leader of Freidenburg, has a mission waiting. Details to be revealed in the meeting room next session.',status:'complete',giver:'Darfin Dewise',session:'2'},
+    {id:4,title:'Get back the rebel list!',body:"Recover the rebel list from the Osterians for Darfin Dewise and he'll reward us with information.",status:'active',giver:'Darfin Dewise',session:'3'},
   ],
   threads:[
     {id:1,text:'Who is General Sokolov — Osterian high command?',session:'Session 2',resolved:false},
     {id:2,text:'Who is the Spy Elf and who are they reporting to?',session:'Session 2',resolved:false},
-    {id:3,text:"What mission does Darfin Dewise have for us?",session:'Session 2',resolved:false},
-    {id:4,text:'What happened to the tortured officer — who was he?',session:'Session 2',resolved:false},
-    {id:5,text:'The missing rebel list — has anyone else found it?',session:'Session 2',resolved:false},
+    {id:3,text:'Where is Gunther?',session:'Session 1',resolved:false},
+    {id:4,text:"What are the Osterians after?",session:'Session 1',resolved:false},
   ],
   lore:[
     {id:1,name:'Freidenburg',type:'place',body:'Secret resistance settlement and refugee camp hidden beneath the city. Run by Darfin Dewise. Safe haven, for now.'},
     {id:2,name:'The Osterians',type:'faction',body:'Invading force modelled on Soviet Russia. The main antagonist force moving into Eilfendar.'},
     {id:3,name:'The Resistance',type:'faction',body:'Underground network opposing Osterian occupation. Uses sewers and tunnel systems to operate unseen.'},
     {id:4,name:'The Tunnel System',type:'place',body:'Network of tunnels and sewers beneath the city. Used by both resistance and political enemies.'},
+    {id:5,name:'The Regime',type:'faction',body:'The old leaders of Eilfendar and the main cause for the War of Greatest Calamity.'},
+    {id:6,name:'The War of Greatest Calamity',type:'lore',body:'The worst war to have occurred across the globe.'},
+    {id:7,name:'Strausberg',type:'place',body:"Velma and Gunther's home town, north of 'Berlin'."},
   ]
 };
 
-function loadState(){try{const r=localStorage.getItem('eilfendar_v2');return r?JSON.parse(r):JSON.parse(JSON.stringify(DEFAULTS));}catch(e){return JSON.parse(JSON.stringify(DEFAULTS));}}
-function saveState(){localStorage.setItem('eilfendar_v2',JSON.stringify(state));}
+// ── JSONBIN SYNC ─────────────────────────────────
+const BIN_ID = '69ceea35aaba882197bcaae9';
+const API_KEY = '$2a$10$LleHmIABhQwShboSBCu2dOWvHZ8/kjM2Ynb2Yt3dzYjpqGZjm8u4O';
+const BIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+
+let saveTimer = null;
+let syncStatus = 'idle'; // idle | saving | error
+
+function setSyncStatus(s, msg) {
+  syncStatus = s;
+  const el = document.getElementById('sync-status');
+  if (!el) return;
+  const labels = { idle:'', saving:'Saving…', saved:'Saved ✓', error:'Save failed — check connection' };
+  el.textContent = labels[s] || msg || '';
+  el.className = 'sync-status ' + s;
+}
+
+async function pushToCloud(data) {
+  setSyncStatus('saving');
+  try {
+    const res = await fetch(BIN_URL, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'X-Access-Key': API_KEY },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) throw new Error(res.status);
+    setSyncStatus('saved');
+    setTimeout(() => setSyncStatus('idle'), 2000);
+  } catch(e) {
+    setSyncStatus('error');
+    console.error('JSONBin save failed:', e);
+  }
+}
+
+async function loadFromCloud() {
+  setSyncStatus('saving');
+  document.getElementById('loading-overlay').style.display = 'flex';
+  try {
+    const res = await fetch(BIN_URL + '/latest', {
+      headers: { 'X-Access-Key': API_KEY }
+    });
+    if (!res.ok) throw new Error(res.status);
+    const json = await res.json();
+    const data = json.record;
+    // If bin only has {init:true} or is empty, seed with defaults
+    if (!data || data.init || !data.sessions) {
+      state = JSON.parse(JSON.stringify(DEFAULTS));
+      await pushToCloud(state);
+    } else {
+      state = data;
+    }
+  } catch(e) {
+    console.warn('Cloud load failed, using defaults:', e);
+    state = JSON.parse(JSON.stringify(DEFAULTS));
+    setSyncStatus('error');
+  }
+  currentSession = Object.keys(state.sessions)[0];
+  document.getElementById('loading-overlay').style.display = 'none';
+  renderAll();
+}
+
+function saveState() {
+  // Debounce — wait 800ms after last change before pushing
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => pushToCloud(state), 800);
+}
+
 function nextId(arr){return arr.length?Math.max(...arr.map(x=>x.id||0))+1:1;}
 
-let state=loadState();
-let currentSession=Object.keys(state.sessions)[0];
+let state = JSON.parse(JSON.stringify(DEFAULTS)); // temp until cloud loads
+let currentSession = Object.keys(state.sessions)[0];
 let charFilter='all',missionFilter='all',threadFilter='all',loreFilter='all',searchCat='all';
 let editingCharId=null;
 
@@ -709,7 +793,8 @@ function copyDiscord(){
 }
 
 // ── INIT ─────────────────────────────────────────
-renderSessions();renderChars();renderMissions();renderThreads();renderLore();
+function renderAll(){renderSessions();renderChars();renderMissions();renderThreads();renderLore();}
+loadFromCloud();
 </script>
 </body>
 </html>
