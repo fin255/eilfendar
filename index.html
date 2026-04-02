@@ -406,50 +406,258 @@ select{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.04e
 <script>
 // ── STATE ────────────────────────────────────────
 const DEFAULTS = {
-  sessions:{"2":[
-    {t:'npc',m:'Dieter lost the rebel list',d:'Names of resistance members — anyone on it is at risk from the Osterians.'},
-    {t:'action',m:'Escorted Dieter through the sewers',d:'Warned rebels before the Osterians could act on the missing list.'},
-    {t:'loc',m:'Sewers → Tunnel system',d:'Resistance network beneath the city. Also used by political enemies.'},
-    {t:'action',m:'Fought rats, killed guards, tortured an officer',d:'Combat and intel gathering en route through the tunnels.'},
-    {t:'note',m:'General Sokolov?',d:'Name mentioned in the tunnels. Likely Osterian high command.'},
-    {t:'action',m:'Solved a riddle',d:'Gained entry to the secret trial entrance into Freidenburg.'},
-    {t:'loc',m:'Freidenburg — secret refugee camp',d:'Hidden resistance settlement. Safe haven, for now.'},
-    {t:'npc',m:'Met Darfin Dewise & Beatrice',d:'Darfin leads Freidenburg and has a mission for us. Beatrice fed us well.'},
-    {t:'note',m:'Spy Elf in Freidenburg',d:'Someone in camp is reporting to an unknown party.'},
-    {t:'loc',m:'Meeting room',d:'Session ends here. Darfin to brief us on the mission next session.'},
-  ],"3":[
-    {t:'action',m:"Darfin briefs us",d:'We get given the details of the mission — recover notes secured in an Osterian facility.'},
-    {t:'loc',m:'The Warehouse',d:"Multiple guards and two regular patrols coming and going from the warehouse."},
-    {t:'action',m:'Breaking in',d:"Viktor fails to sneak in making a scene. In an attempt to get away he burns the door. Tod and Velma see the chaos and break in to help him."},
-  ]},
+  sessions:{
+    2:[
+      {
+        t:'npc',
+        m:'Dieter lost the rebel list',
+        d:'Names of resistance members — anyone on it is at risk from the Osterians.'
+      },
+      {
+        t:'action',
+        m:'Escorted Dieter through the sewers',
+        d:'Warned rebels before the Osterians could act on the missing list.'
+      },
+      {
+        t:'loc',
+        m:'Sewers → Tunnel system',
+        d:'Resistance network beneath the city. Also used by political enemies.'
+      },
+      {
+        t:'action',
+        m:'Fought rats, killed guards, tortured an officer',
+        d:'Combat and intel gathering en route through the tunnels.'
+      },
+      {
+        t:'note',
+        m:'General Sokolov?',
+        d:'Name mentioned in the tunnels. Likely Osterian high command.'
+      },
+      {
+        t:'action',
+        m:'Solved a riddle',
+        d:'Gained entry to the secret trial entrance into Freidenburg.'
+      },
+      {
+        t:'loc',
+        m:'Freidenburg — secret refugee camp',
+        d:'Hidden resistance settlement. Safe haven, for now.'
+      },
+      {
+        t:'npc',
+        m:'Met Darfin Dewise & Beatrice',
+        d:'Darfin leads Freidenburg and has a mission for us. Beatrice fed us well.'
+      },
+      {
+        t:'note',
+        m:'Spy Elf in Freidenburg',
+        d:'Someone in camp is reporting to an unknown party.'
+      },
+      {
+        t:'loc',
+        m:'Meeting room',
+        d:'Session ends here. Darfin to brief us on the mission next session.'
+      }
+    ],
+    3:[
+      {
+        t:'action',
+        m:'Darfin briefs us',
+        d:'We get given the details of the mission — recover notes secured in an Osterian facility.'
+      },
+      {
+        t:'loc',
+        m:'The Warehouse',
+        d:'Multiple guards and two regular patrols coming and going from the warehouse.'
+      },
+      {
+        t:'action',
+        m:'Breaking in',
+        d:'Viktor fails to sneak in making a scene. In an attempt to get away he burns the door. Tod and Velma see the chaos and break in to help him.'
+      },
+      {
+        t:'action',
+        m:'List Heist',
+        d:'After plans went south Tod and Velma distracted the guards out while Viktor managed to steal the list from the higher-ups.'
+      },
+      {
+        t:'npc',
+        m:'Darfin Dewise',
+        d:'Darfin gave us our reward. He told us about a cash house we could raid with Hans the elf, or we could go to Frankfurt to look for Gunther.'
+      }
+    ]
+  },
   characters:[
-    {id:1,name:'Dieter',race:'Human',status:'ally',desc:'Old resistance man. Lost the rebel list. Knows the tunnels intimately.',notes:'Our neighbour. Trustworthy but dangerously careless with documents.',location:'Freidenburg'},
-    {id:2,name:'Darfin Dewise',race:'Elf',status:'leader',desc:'Leader of Freidenburg. Bit of a twat, but clearly knows what he\'s doing.',notes:'Has a mission planned for us. Worth staying on his good side.',location:'Freidenburg — meeting room'},
-    {id:3,name:'Beatrice',race:'Human',status:'neutral',desc:'"Gangsta Granny." Fed us well in Freidenburg.',notes:'Friendly enough but unclear where her loyalties truly lie.',location:'Freidenburg'},
-    {id:4,name:'General Sokolov',race:'Unknown',status:'threat',desc:'Osterian military. Name only so far — possibly high command.',notes:'Keep ears open for this name. May be directing operations against the resistance.',location:'Unknown'},
-    {id:5,name:'Spy Elf',race:'Elf',status:'unknown',desc:'Hidden somewhere in Freidenburg among refugees.',notes:'Identity unknown. Who are they reporting to? Top priority to uncover.',location:'Freidenburg (hidden)'},
+    {
+      id:1,
+      name:'Dieter',
+      race:'Human',
+      status:'ally',
+      desc:'Old resistance man. Lost the rebel list. Knows the tunnels intimately.',
+      notes:'Our neighbour. Trustworthy but dangerously careless with documents.',
+      location:'Freidenburg'
+    },
+    {
+      id:2,
+      name:'Darfin Dewise',
+      race:'Elf',
+      status:'leader',
+      desc:'Leader of Freidenburg. Bit of a twat, but clearly knows what he\'s doing.',
+      notes:'Has a mission planned for us. Worth staying on his good side.',
+      location:'Freidenburg — meeting room'
+    },
+    {
+      id:3,
+      name:'Beatrice',
+      race:'Human',
+      status:'neutral',
+      desc:'"Gangsta Granny." Fed us well in Freidenburg.',
+      notes:'Friendly enough but unclear where her loyalties truly lie.',
+      location:'Freidenburg'
+    },
+    {
+      id:4,
+      name:'General Sokolov',
+      race:'Unknown',
+      status:'threat',
+      desc:'Osterian military. Name only so far — possibly high command.',
+      notes:'Keep ears open for this name. May be directing operations against the resistance.',
+      location:'Unknown'
+    },
+    {
+      id:5,
+      name:'Hans The Spy',
+      race:'Elf',
+      status:'unknown',
+      desc:'Hidden somewhere in Freidenburg among refugees.',
+      notes:'Identity unknown. Who are they reporting to? Top priority to uncover.',
+      location:'Freidenburg (hidden)'
+    }
   ],
   missions:[
-    {id:1,title:'Warn the rebels — the list is lost',body:'Dieter lost a list of resistance members. The party escorted him through the sewers to reach rebels before the Osterians act on it.',status:'complete',giver:'Dieter',session:'2'},
-    {id:2,title:"Darfin's mission — TBC",body:'Darfin Dewise, leader of Freidenburg, has a mission waiting. Details to be revealed in the meeting room next session.',status:'complete',giver:'Darfin Dewise',session:'2'},
-    {id:4,title:'Get back the rebel list!',body:"Recover the rebel list from the Osterians for Darfin Dewise and he'll reward us with information.",status:'active',giver:'Darfin Dewise',session:'3'},
+    {
+      id:1,
+      title:'Warn the rebels — the list is lost',
+      body:'Dieter lost a list of resistance members. The party escorted him through the sewers to reach rebels before the Osterians act on it.',
+      status:'complete',
+      giver:'Dieter',
+      session:'2'
+    },
+    {
+      id:2,
+      title:'Darfin\'s mission — TBC',
+      body:'Darfin Dewise, leader of Freidenburg, has a mission waiting. Details to be revealed in the meeting room next session.',
+      status:'complete',
+      giver:'Darfin Dewise',
+      session:'2'
+    },
+    {
+      id:4,
+      title:'Get back the rebel list!',
+      body:'Recover the rebel list from the Osterians for Darfin Dewise and he\'ll reward us with information.',
+      status:'complete',
+      giver:'Darfin Dewise',
+      session:'3'
+    },
+    {
+      id:5,
+      title:'Speak to Hans the Spy',
+      body:'He can direct you with a team and a location to raid for money or gear.',
+      status:'active',
+      giver:'',
+      session:'3'
+    },
+    {
+      id:6,
+      title:'Road to Frankfurt',
+      body:'Make your way to the city of Frankfurt.',
+      status:'active',
+      giver:'',
+      session:'3'
+    },
+    {
+      id:7,
+      title:'Find Gunther',
+      body:'After sending an eerie letter, Velma\'s husband Gunther never returned from the Great War. The mystery surrounding his disappearance is only fuelled by his name being redacted in the registry files. Find his whereabouts.',
+      status:'active',
+      giver:'',
+      session:'3'
+    }
   ],
   threads:[
-    {id:1,text:'Who is General Sokolov — Osterian high command?',session:'Session 2',resolved:false},
-    {id:2,text:'Who is the Spy Elf and who are they reporting to?',session:'Session 2',resolved:false},
-    {id:3,text:'Where is Gunther?',session:'Session 1',resolved:false},
-    {id:4,text:"What are the Osterians after?",session:'Session 1',resolved:false},
+    {
+      id:1,
+      text:'Who is General Sokolov — Osterian high command?',
+      session:'Session 2',
+      resolved:false
+    },
+    {
+      id:2,
+      text:'Who is Hans the Spy and who are they reporting to?',
+      session:'Session 2',
+      resolved:true
+    },
+    {
+      id:3,
+      text:'Where is Gunther?',
+      session:'Session 1',
+      resolved:false
+    },
+    {
+      id:4,
+      text:'What are the Osterians after?',
+      session:'Session 1',
+      resolved:false
+    }
   ],
   lore:[
-    {id:1,name:'Freidenburg',type:'place',body:'Secret resistance settlement and refugee camp hidden beneath the city. Run by Darfin Dewise. Safe haven, for now.'},
-    {id:2,name:'The Osterians',type:'faction',body:'Invading force modelled on Soviet Russia. The main antagonist force moving into Eilfendar.'},
-    {id:3,name:'The Resistance',type:'faction',body:'Underground network opposing Osterian occupation. Uses sewers and tunnel systems to operate unseen.'},
-    {id:4,name:'The Tunnel System',type:'place',body:'Network of tunnels and sewers beneath the city. Used by both resistance and political enemies.'},
-    {id:5,name:'The Regime',type:'faction',body:'The old leaders of Eilfendar and the main cause for the War of Greatest Calamity.'},
-    {id:6,name:'The War of Greatest Calamity',type:'lore',body:'The worst war to have occurred across the globe.'},
-    {id:7,name:'Strausberg',type:'place',body:"Velma and Gunther's home town, north of 'Berlin'."},
+    {
+      id:1,
+      name:'Freidenburg',
+      type:'place',
+      body:'Secret resistance settlement and refugee camp hidden beneath the city. Run by Darfin Dewise. Safe haven, for now.'
+    },
+    {
+      id:2,
+      name:'The Osterians',
+      type:'faction',
+      body:'Invading force modelled on Soviet Russia. The main antagonist force moving into Eilfendar.'
+    },
+    {
+      id:3,
+      name:'The Resistance',
+      type:'faction',
+      body:'Underground network opposing Osterian occupation. Uses sewers and tunnel systems to operate unseen.'
+    },
+    {
+      id:4,
+      name:'The Tunnel System',
+      type:'place',
+      body:'Network of tunnels and sewers beneath the city. Used by both resistance and political enemies.'
+    },
+    {
+      id:5,
+      name:'The Regime',
+      type:'faction',
+      body:'The old leaders of Eilfendar and the main cause for the War of Greatest Calamity.'
+    },
+    {
+      id:6,
+      name:'The War of Greatest Calamity',
+      type:'lore',
+      body:'The worst war to have occurred across the globe.'
+    },
+    {
+      id:7,
+      name:'Strausberg',
+      type:'place',
+      body:'Velma and Gunther\'s home town, north of \'Berlin\'.'
+    }
   ],
-  sessionChars:{'2':[1,2,3],'3':[1,2,3,4]}
+  sessionChars:{
+    2:[3,2,5,1],
+    3:[2,5,1]
+  }
 };
 
 // ── JSONBIN SYNC ─────────────────────────────────
@@ -487,7 +695,6 @@ async function pushToCloud(data) {
 }
 
 async function loadFromCloud() {
-  setSyncStatus('saving');
   document.getElementById('loading-overlay').style.display = 'flex';
   try {
     const res = await fetch(BIN_URL + '/latest', {
@@ -496,16 +703,23 @@ async function loadFromCloud() {
     if (!res.ok) throw new Error(res.status);
     const json = await res.json();
     const data = json.record;
-    // If bin only has {init:true} or is empty, seed with defaults
-    if (!data || data.init || !data.sessions) {
+    // Only seed defaults if bin is genuinely empty/uninitialised
+    const isEmpty = !data || Object.keys(data).length === 0 || (Object.keys(data).length === 1 && data.init);
+    if (isEmpty) {
       state = JSON.parse(JSON.stringify(DEFAULTS));
       await pushToCloud(state);
     } else {
+      // Merge: cloud is source of truth, fill any missing keys from DEFAULTS
       state = data;
-      if(!state.sessionChars) state.sessionChars={};
+      if (!state.sessionChars) state.sessionChars = {};
+      if (!state.sessions) state.sessions = JSON.parse(JSON.stringify(DEFAULTS.sessions));
+      if (!state.characters) state.characters = JSON.parse(JSON.stringify(DEFAULTS.characters));
+      if (!state.missions) state.missions = JSON.parse(JSON.stringify(DEFAULTS.missions));
+      if (!state.threads) state.threads = JSON.parse(JSON.stringify(DEFAULTS.threads));
+      if (!state.lore) state.lore = JSON.parse(JSON.stringify(DEFAULTS.lore));
     }
   } catch(e) {
-    console.warn('Cloud load failed, using defaults:', e);
+    console.warn('Cloud load failed, falling back to defaults:', e);
     state = JSON.parse(JSON.stringify(DEFAULTS));
     setSyncStatus('error');
   }
