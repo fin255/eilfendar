@@ -22,8 +22,18 @@ body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georg
 .campaign-title{font-family:'Playfair Display',serif;font-size:42px;font-weight:600;letter-spacing:-0.02em;line-height:1;}
 .campaign-title span{color:var(--accent);}
 .session-badge{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink3);border:1px solid var(--border);padding:4px 10px;background:var(--paper2);}
-.lore-strip{background:var(--ink);color:var(--paper);padding:10px 16px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;margin-bottom:1.25rem;display:flex;gap:24px;flex-wrap:wrap;}
-.lore-strip span{color:var(--paper3);}.lore-strip strong{color:#f5c47a;font-weight:500;}
+.campaign-desc-card{background:var(--paper2);border:1px solid var(--border2);padding:12px 14px;margin-bottom:1.25rem;position:relative;animation:fadeIn 0.25s ease;}
+.campaign-desc-card:hover .cd-edit-btn{opacity:1;}
+.cd-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:600;margin-bottom:2px;}
+.cd-label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink4);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;}
+.cd-display{font-size:13px;color:var(--ink2);line-height:1.6;font-style:italic;white-space:pre-wrap;cursor:default;}
+.cd-edit-btn{position:absolute;top:10px;right:10px;opacity:0;transition:opacity 0.15s;background:none;border:none;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink4);padding:2px 5px;}
+.cd-edit-btn:hover{color:var(--accent);}
+.cd-textarea{display:none;width:100%;background:var(--paper);border:1px solid var(--border);color:var(--ink2);font-size:13px;font-family:'Source Serif 4',Georgia,serif;font-style:italic;line-height:1.6;resize:vertical;min-height:60px;padding:8px 10px;outline:none;}
+.cd-textarea:focus{border-color:var(--accent);}
+.campaign-desc-card.editing .cd-display{display:none;}
+.campaign-desc-card.editing .cd-textarea{display:block;}
+.campaign-desc-card.editing .cd-edit-btn{opacity:1;}
 /* NAV */
 .nav-tabs{display:flex;gap:0;border-bottom:2px solid var(--ink);margin-bottom:0;}
 .nav-tab{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;padding:8px 16px;border:none;background:transparent;color:var(--ink3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.15s;white-space:nowrap;}
@@ -138,6 +148,49 @@ select{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.04e
 .discord-out{background:#1e1f22;color:#dbdee1;padding:1rem;font-family:'IBM Plex Mono',monospace;font-size:12px;white-space:pre-wrap;line-height:1.7;max-height:280px;overflow-y:auto;display:none;margin-top:1rem;}
 .char-count{font-family:'IBM Plex Mono',monospace;font-size:11px;margin-top:6px;}
 .ok{color:var(--teal);}.over{color:var(--accent);}
+/* CHAR FULL VIEW */
+.char-fullview-bg{display:none;position:fixed;inset:0;background:rgba(26,23,20,0.55);z-index:200;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto;}
+.char-fullview-bg.open{display:flex;}
+.cfv-container{max-width:640px;width:100%;display:flex;flex-direction:column;}
+.char-fullview{background:var(--paper);border:1.5px solid var(--ink);padding:2rem 2.5rem;width:100%;max-height:none;animation:fadeIn 0.2s ease;}
+.cfv-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.25rem;}
+.cfv-name{font-family:'Playfair Display',serif;font-size:28px;font-weight:600;line-height:1.1;}
+.cfv-close{background:none;border:none;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:18px;color:var(--ink3);padding:0 4px;flex-shrink:0;}
+.cfv-close:hover{color:var(--accent);}
+.cfv-race{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink4);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;}
+.cfv-status{display:inline-block;margin-bottom:12px;}
+.cfv-desc{font-size:14px;color:var(--ink2);line-height:1.7;font-style:italic;margin-bottom:8px;}
+.cfv-notes{font-size:13px;color:var(--ink3);line-height:1.6;border-top:1px solid var(--border2);padding-top:10px;margin-bottom:8px;}
+.cfv-location{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink4);margin-bottom:1.25rem;}
+.cfv-section{margin-top:1.5rem;border-top:2px solid var(--ink);padding-top:1rem;}
+.cfv-section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.cfv-section-title{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink4);}
+.cfv-link-btn{background:none;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink3);padding:3px 8px;cursor:pointer;transition:all 0.12s;}
+.cfv-link-btn:hover{border-color:var(--ink);color:var(--ink);}
+.cfv-linked-item{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--paper2);border:1px solid var(--border2);margin-bottom:6px;animation:fadeIn 0.15s ease;}
+.cfv-linked-item:hover .cfv-unlink{opacity:1;}
+.cfv-li-title{font-family:'Playfair Display',serif;font-size:13px;font-weight:600;}
+.cfv-li-sub{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink4);text-transform:uppercase;letter-spacing:0.06em;}
+.cfv-unlink{background:none;border:none;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink4);opacity:0;transition:opacity 0.15s;padding:2px 4px;}
+.cfv-unlink:hover{color:var(--accent);}
+.cfv-empty{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink4);font-style:italic;padding:4px 0;}
+.cfv-picker{border:1px solid var(--border);background:var(--paper2);margin-top:6px;max-height:180px;overflow-y:auto;animation:fadeIn 0.15s ease;}
+.cfv-picker-item{display:flex;justify-content:space-between;align-items:center;padding:7px 10px;cursor:pointer;font-size:12px;border-bottom:1px solid var(--border2);}
+.cfv-picker-item:last-child{border-bottom:none;}
+.cfv-picker-item:hover{background:var(--paper3);}
+.cfv-picker-item.already{opacity:0.35;cursor:default;}
+/* CHAR FULL VIEW — PREVIEW DETAIL */
+.cfv-preview-wrap{overflow:hidden;max-height:0;transition:max-height 0.4s cubic-bezier(0.4,0,0.2,1),opacity 0.3s ease;opacity:0;}
+.cfv-preview-wrap.open{max-height:500px;opacity:1;}
+.cfv-preview{background:var(--paper);border:1.5px solid var(--ink);border-top:none;padding:16px 2.5rem 20px;}
+.cfv-preview .cfv-pv-label{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink4);margin-bottom:6px;}
+.cfv-preview .cfv-pv-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;margin-bottom:4px;}
+.cfv-preview .cfv-pv-sub{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink4);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px;}
+.cfv-preview .cfv-pv-body{font-size:13px;color:var(--ink2);line-height:1.7;font-style:italic;}
+.cfv-preview .cfv-pv-meta{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink4);margin-top:8px;display:flex;gap:12px;flex-wrap:wrap;}
+.cfv-linked-item{cursor:pointer;transition:background 0.12s;}
+.cfv-linked-item:hover{background:var(--paper3);}
+.cfv-linked-item.active{background:var(--paper3);border-color:var(--border);}
 /* MODAL */
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(26,23,20,0.55);z-index:200;align-items:center;justify-content:center;padding:1rem;}
 .modal-bg.open{display:flex;}
@@ -157,6 +210,65 @@ select{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.04e
 .sync-status.saving{color:var(--amber);}
 .sync-status.saved{color:var(--teal);}
 .sync-status.error{color:var(--accent);}
+/* @MENTIONS */
+.mention{color:var(--accent);font-weight:500;cursor:pointer;text-decoration:none;border-bottom:1px solid transparent;transition:border-color 0.12s;}
+.mention:hover{border-bottom-color:var(--accent);}
+/* AUTOCOMPLETE DROPDOWN */
+.mention-ac{position:fixed;z-index:300;background:var(--paper);border:1.5px solid var(--ink);max-height:180px;overflow-y:auto;min-width:200px;box-shadow:0 4px 16px rgba(26,23,20,0.15);display:none;}
+.mention-ac.open{display:block;}
+.mention-ac-item{padding:8px 12px;cursor:pointer;font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid var(--border2);}
+.mention-ac-item:last-child{border-bottom:none;}
+.mention-ac-item:hover,.mention-ac-item.selected{background:var(--paper2);}
+.mention-ac-name{font-family:'Playfair Display',serif;font-weight:600;font-size:13px;}
+.mention-ac-type{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink4);}
+/* MENTION SIDE PANEL */
+.mention-panel-bg{display:none;position:fixed;inset:0;z-index:250;background:rgba(26,23,20,0.3);}
+.mention-panel-bg.open{display:block;}
+.mention-panel{position:fixed;top:0;right:-380px;width:380px;height:100%;background:var(--paper);border-left:1.5px solid var(--ink);z-index:251;overflow-y:auto;padding:2rem 1.5rem;transition:right 0.3s cubic-bezier(0.4,0,0.2,1);}
+.mention-panel.open{right:0;}
+.mp-close{position:absolute;top:12px;right:14px;background:none;border:none;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:18px;color:var(--ink3);}
+.mp-close:hover{color:var(--accent);}
+.mp-label{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink4);margin-bottom:6px;}
+.mp-title{font-family:'Playfair Display',serif;font-size:24px;font-weight:600;margin-bottom:4px;}
+.mp-sub{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink4);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:12px;}
+.mp-body{font-size:14px;color:var(--ink2);line-height:1.7;font-style:italic;margin-bottom:10px;}
+.mp-notes{font-size:13px;color:var(--ink3);line-height:1.6;border-top:1px solid var(--border2);padding-top:10px;margin-bottom:10px;}
+.mp-meta{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink4);margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;}
+.mp-section{margin-top:1.25rem;border-top:1px solid var(--border);padding-top:1rem;}
+.mp-section-title{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink4);margin-bottom:8px;}
+.mp-linked{padding:6px 0;border-bottom:1px solid var(--border2);font-size:13px;}
+.mp-linked:last-child{border-bottom:none;}
+/* RICH TEXT EDITOR */
+.rte-toolbar{display:flex;gap:2px;padding:6px 0;border-bottom:1px solid var(--border);margin-bottom:8px;flex-wrap:wrap;}
+.rte-btn{background:none;border:1px solid var(--border2);font-family:'IBM Plex Mono',monospace;font-size:11px;padding:3px 8px;cursor:pointer;color:var(--ink3);transition:all 0.12s;line-height:1;}
+.rte-btn:hover{background:var(--paper2);color:var(--ink);border-color:var(--border);}
+.rte-btn.active{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+.rte-editor{min-height:120px;padding:10px 12px;border:1px solid var(--border);background:var(--paper2);font-family:'Source Serif 4',Georgia,serif;font-size:14px;line-height:1.7;color:var(--ink);outline:none;overflow-y:auto;max-height:50vh;}
+.rte-editor:focus{border-color:var(--ink);}
+.rte-editor:empty::before{content:attr(data-placeholder);color:var(--ink4);font-style:italic;pointer-events:none;}
+.rte-editor h3{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;margin:8px 0 4px;}
+.rte-editor hr{border:none;border-top:1px solid var(--border);margin:12px 0;}
+/* MENTION INLINE DETAIL (inside side panel) */
+.mp-inline-detail{background:var(--paper2);border:1px solid var(--border);padding:12px 14px;margin:10px 0;animation:fadeIn 0.2s ease;}
+.mp-inline-detail .mp-id-close{float:right;background:none;border:none;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--ink4);padding:0 2px;}
+.mp-inline-detail .mp-id-close:hover{color:var(--accent);}
+.mp-inline-detail .mp-id-label{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink4);margin-bottom:4px;}
+.mp-inline-detail .mp-id-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;margin-bottom:2px;}
+.mp-inline-detail .mp-id-sub{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink4);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px;}
+.mp-inline-detail .mp-id-body{font-size:13px;color:var(--ink2);line-height:1.6;font-style:italic;}
+/* MENTION SUB-PANEL (extends left from side panel) */
+.mention-subpanel{position:fixed;top:0;right:-340px;width:340px;height:100%;background:var(--paper);border-left:1.5px solid var(--ink);z-index:252;overflow-y:auto;padding:2rem 1.5rem;transition:right 0.3s cubic-bezier(0.4,0,0.2,1);}
+.mention-subpanel.open{right:380px;}
+.msp-close{position:absolute;top:12px;right:14px;background:none;border:none;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:16px;color:var(--ink3);}
+.msp-close:hover{color:var(--accent);}
+.mp-deep-display{font-size:14px;color:var(--ink);line-height:1.8;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);}
+.mp-deep-display h3{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;margin:10px 0 4px;}
+.mp-deep-display hr{border:none;border-top:1px solid var(--border);margin:12px 0;}
+.mp-deep-section{margin-top:1.5rem;border-top:2px solid var(--ink);padding-top:1rem;}
+.mp-deep-toggle{display:flex;justify-content:space-between;align-items:center;cursor:pointer;margin-bottom:8px;}
+.mp-deep-toggle:hover .mp-section-title{color:var(--ink);}
+.mp-deep-arrow{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink4);transition:transform 0.2s;}
+.mp-deep-arrow.open{transform:rotate(90deg);}
 </style>
 </head>
 <body>
@@ -165,6 +277,14 @@ select{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.04e
   <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.1em;color:#9c9288;">Loading campaign notes…</div>
 </div>
 <div class="grain"></div>
+
+<!-- @MENTION AUTOCOMPLETE -->
+<div class="mention-ac" id="mention-ac"></div>
+
+<!-- MENTION SIDE PANEL -->
+<div class="mention-panel-bg" id="mention-panel-bg"></div>
+<div class="mention-subpanel" id="mention-subpanel"></div>
+<div class="mention-panel" id="mention-panel"></div>
 <div class="page">
 
 <div class="masthead">
@@ -174,10 +294,12 @@ select{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.04e
 <div style="display:flex;justify-content:flex-end;margin-bottom:4px;min-height:18px;">
   <span id="sync-status" class="sync-status"></span>
 </div>
-<div class="lore-strip">
-  <div><strong>Setting:</strong> <span>Fake Germany under occupation</span></div>
-  <div><strong>Threat:</strong> <span>Osterians (Russian-style invaders)</span></div>
-  <div><strong>Base:</strong> <span>Freidenburg — secret refugee camp</span></div>
+<div class="campaign-desc-card" id="campaign-desc-card">
+  <div class="cd-title">Eilfendar</div>
+  <div class="cd-label">Campaign</div>
+  <div class="cd-display" id="cd-display"></div>
+  <textarea class="cd-textarea" id="cd-textarea" placeholder="Campaign description — setting, themes, current situation..."></textarea>
+  <button class="cd-edit-btn" id="cd-edit-btn" onclick="toggleCampaignDescEdit()">Edit</button>
 </div>
 
 <div class="nav-tabs">
@@ -381,6 +503,32 @@ select{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.04e
 
 </div><!-- /page -->
 
+<!-- CHAR FULL VIEW -->
+<div class="char-fullview-bg" id="char-fullview-bg">
+  <div class="cfv-container">
+    <div class="char-fullview" id="char-fullview"></div>
+    <div class="cfv-preview-wrap" id="cfv-preview-wrap"></div>
+  </div>
+</div>
+
+<!-- EDIT LORE MODAL -->
+<div class="modal-bg" id="lore-modal">
+  <div class="modal">
+    <div class="modal-title">Edit entry</div>
+    <label>Name</label><input type="text" id="elm-name">
+    <label>Type</label>
+    <select id="elm-type">
+      <option value="place">Place</option><option value="faction">Faction</option>
+      <option value="item">Item</option><option value="lore">Lore</option>
+    </select>
+    <label>Description</label><textarea id="elm-body"></textarea>
+    <div class="form-row" style="margin-top:1rem">
+      <button class="btn" onclick="saveEditLore()">Save</button>
+      <button class="btn" onclick="closeLoreModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <!-- EDIT CHAR MODAL -->
 <div class="modal-bg" id="char-modal">
   <div class="modal">
@@ -406,6 +554,7 @@ select{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.04e
 <script>
 // ── STATE ────────────────────────────────────────
 const DEFAULTS = {
+  campaignDesc: "Setting: Fake Germany under occupation\nThreat: Osterians (Russian-style invaders)\nBase: Freidenburg — secret refugee camp",
   sessions:{
     2:[
       {
@@ -717,6 +866,7 @@ async function loadFromCloud() {
       if (!state.missions) state.missions = JSON.parse(JSON.stringify(DEFAULTS.missions));
       if (!state.threads) state.threads = JSON.parse(JSON.stringify(DEFAULTS.threads));
       if (!state.lore) state.lore = JSON.parse(JSON.stringify(DEFAULTS.lore));
+      if (state.campaignDesc === undefined) state.campaignDesc = DEFAULTS.campaignDesc;
     }
   } catch(e) {
     console.warn('Cloud load failed, falling back to defaults:', e);
@@ -725,6 +875,7 @@ async function loadFromCloud() {
   }
   currentSession = Object.keys(state.sessions)[0];
   document.getElementById('loading-overlay').style.display = 'none';
+  renderCampaignDesc();
   renderAll();
 }
 
@@ -732,6 +883,29 @@ function saveState() {
   // Debounce — wait 800ms after last change before pushing
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => pushToCloud(state), 800);
+}
+
+// ── CAMPAIGN DESCRIPTION ────────────────────────
+function renderCampaignDesc(){
+  const text = state.campaignDesc || '';
+  document.getElementById('cd-display').textContent = text;
+  document.getElementById('cd-textarea').value = text;
+}
+function toggleCampaignDescEdit(){
+  const card = document.getElementById('campaign-desc-card');
+  const ta = document.getElementById('cd-textarea');
+  const btn = document.getElementById('cd-edit-btn');
+  const editing = card.classList.toggle('editing');
+  if(editing){
+    btn.textContent = 'Done';
+    ta.value = state.campaignDesc || '';
+    ta.focus();
+    ta.oninput = ()=>{ state.campaignDesc = ta.value; saveState(); };
+  } else {
+    btn.textContent = 'Edit';
+    ta.oninput = null;
+    renderCampaignDesc();
+  }
 }
 
 function nextId(arr){return arr.length?Math.max(...arr.map(x=>x.id||0))+1:1;}
@@ -768,7 +942,7 @@ function renderEvents(){
   document.getElementById('ev-list').innerHTML=evs.length?evs.map((e,i)=>`
     <div class="event ${tClass[e.t]||'ev-action'}">
       <div class="ev-icon">${icons[e.t]||'▶'}</div>
-      <div style="flex:1"><div class="ev-main">${e.m}</div>${e.d?`<div class="ev-detail">${e.d}</div>`:''}</div>
+      <div style="flex:1"><div class="ev-main">${renderMentions(e.m)}</div>${e.d?`<div class="ev-detail">${renderMentions(e.d)}</div>`:''}</div>
       <button class="ev-delete" onclick="deleteEvent(${i})">✕</button>
     </div>`).join(''):'<div class="empty-state">No events yet for this session.</div>';
 }
@@ -869,13 +1043,13 @@ function renderChars(){
   let chars=state.characters;
   if(charFilter!=='all')chars=chars.filter(c=>c.status===charFilter);
   document.getElementById('char-list').innerHTML=chars.length?chars.map(c=>`
-    <div class="char-card">
+    <div class="char-card" style="cursor:pointer;" onclick="openCharFullView(${c.id})">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;">
         <div><div class="char-name">${c.name}</div>${c.race?`<div class="char-race">${c.race}</div>`:''}</div>
-        <div class="row-actions"><button onclick="openEditChar(${c.id})">edit</button><button onclick="deleteChar(${c.id})">✕</button></div>
+        <div class="row-actions"><button onclick="event.stopPropagation();openEditChar(${c.id})">edit</button><button onclick="event.stopPropagation();deleteChar(${c.id})">✕</button></div>
       </div>
-      ${c.desc?`<div class="char-desc">${c.desc}</div>`:''}
-      ${c.notes?`<div class="char-notes">${c.notes}</div>`:''}
+      ${c.desc?`<div class="char-desc">${renderMentions(c.desc)}</div>`:''}
+      ${c.notes?`<div class="char-notes">${renderMentions(c.notes)}</div>`:''}
       <div class="char-tags">
         <span class="tag tag-${c.status}">${c.status}</span>
         ${c.location?`<span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink4)">📍 ${c.location}</span>`:''}
@@ -914,6 +1088,187 @@ function saveEditChar(){
 function closeModal(){document.getElementById('char-modal').classList.remove('open');editingCharId=null;}
 document.getElementById('char-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
 
+// ── CHAR FULL VIEW ──────────────────────────────
+let cfvPickerOpen=null; // tracks which picker is open: 'missions','threads','lore'
+let cfvPreview=null; // {type:'mission'|'thread'|'lore', id:Number} or null
+
+function openCharFullView(id){
+  const c=state.characters.find(x=>x.id===id);if(!c)return;
+  if(!c.linkedMissions)c.linkedMissions=[];
+  if(!c.linkedThreads)c.linkedThreads=[];
+  if(!c.linkedLore)c.linkedLore=[];
+  cfvPickerOpen=null;
+  cfvPreview=null;
+  renderCharFullView(c);
+  document.getElementById('char-fullview-bg').classList.add('open');
+}
+
+function closeCharFullView(){document.getElementById('char-fullview-bg').classList.remove('open');cfvPickerOpen=null;}
+document.getElementById('char-fullview-bg').addEventListener('click',e=>{if(e.target===e.currentTarget)closeCharFullView();});
+
+function renderCharFullView(c){
+  const esc=s=>(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+  const isActive=(type,id)=>cfvPreview&&cfvPreview.type===type&&cfvPreview.id===id;
+
+  // linked missions
+  const linkedMissions=(c.linkedMissions||[]).map(mid=>{
+    const m=state.missions.find(x=>x.id===mid);
+    if(!m)return '';
+    return `<div class="cfv-linked-item ${isActive('mission',mid)?'active':''}" onclick="toggleCfvPreview(${c.id},&quot;mission&quot;,${mid})">
+      <div><div class="cfv-li-title">${esc(m.title)}</div><div class="cfv-li-sub">${m.status} — Session ${m.session||'?'}</div></div>
+      <button class="cfv-unlink" onclick="event.stopPropagation();unlinkFromChar(${c.id},&quot;linkedMissions&quot;,${mid})">✕</button>
+    </div>`;
+  }).join('');
+
+  // linked threads
+  const linkedThreads=(c.linkedThreads||[]).map(tid=>{
+    const t=state.threads.find(x=>x.id===tid);
+    if(!t)return '';
+    return `<div class="cfv-linked-item ${isActive('thread',tid)?'active':''}" onclick="toggleCfvPreview(${c.id},&quot;thread&quot;,${tid})">
+      <div><div class="cfv-li-title">${esc(t.text)}</div><div class="cfv-li-sub">${t.resolved?'Resolved':'Open'} — ${t.session||''}</div></div>
+      <button class="cfv-unlink" onclick="event.stopPropagation();unlinkFromChar(${c.id},&quot;linkedThreads&quot;,${tid})">✕</button>
+    </div>`;
+  }).join('');
+
+  // linked lore
+  const linkedLore=(c.linkedLore||[]).map(lid=>{
+    const l=state.lore.find(x=>x.id===lid);
+    if(!l)return '';
+    return `<div class="cfv-linked-item ${isActive('lore',lid)?'active':''}" onclick="toggleCfvPreview(${c.id},&quot;lore&quot;,${lid})">
+      <div><div class="cfv-li-title">${esc(l.name)}</div><div class="cfv-li-sub">${l.type||'lore'}</div></div>
+      <button class="cfv-unlink" onclick="event.stopPropagation();unlinkFromChar(${c.id},&quot;linkedLore&quot;,${lid})">✕</button>
+    </div>`;
+  }).join('');
+
+  // pickers
+  function pickerHTML(items, field, labelFn, subFn){
+    if(!items.length) return '<div style="padding:8px;font-size:12px;color:var(--ink4)">None yet</div>';
+    return items.map(item=>{
+      const already=(c[field]||[]).includes(item.id);
+      const onclick=already?'':`linkToChar(${c.id},&quot;${field}&quot;,${item.id})`;
+      return `<div class="cfv-picker-item ${already?'already':''}" onclick="${onclick}">${esc(labelFn(item))}<span class="cfv-li-sub">${esc(subFn(item))}</span></div>`;
+    }).join('');
+  }
+  const missionPicker=cfvPickerOpen==='missions'?`<div class="cfv-picker">${pickerHTML(state.missions,'linkedMissions',m=>m.title,m=>m.status)}</div>`:'';
+  const threadPicker=cfvPickerOpen==='threads'?`<div class="cfv-picker">${pickerHTML(state.threads,'linkedThreads',t=>t.text,t=>t.resolved?'Resolved':'Open')}</div>`:'';
+  const lorePicker=cfvPickerOpen==='lore'?`<div class="cfv-picker">${pickerHTML(state.lore,'linkedLore',l=>l.name,l=>l.type||'lore')}</div>`:'';
+
+  document.getElementById('char-fullview').innerHTML=`
+    <div class="cfv-header">
+      <div class="cfv-name">${esc(c.name)}</div>
+      <button class="cfv-close" onclick="closeCharFullView()">✕</button>
+    </div>
+    ${c.race?`<div class="cfv-race">${esc(c.race)}</div>`:''}
+    <div class="cfv-status"><span class="tag tag-${c.status}">${c.status}</span></div>
+    ${c.desc?`<div class="cfv-desc">${renderMentions(esc(c.desc))}</div>`:''}
+    ${c.notes?`<div class="cfv-notes">${renderMentions(esc(c.notes))}</div>`:''}
+    ${c.location?`<div class="cfv-location">📍 ${esc(c.location)}</div>`:''}
+    <div class="cfv-section">
+      <div class="cfv-section-head">
+        <span class="cfv-section-title">Linked Missions</span>
+        <button class="cfv-link-btn" onclick="toggleCfvPicker(${c.id},'missions')">${cfvPickerOpen==='missions'?'Close':'+ Link'}</button>
+      </div>
+      ${linkedMissions||'<div class="cfv-empty">No linked missions</div>'}
+      ${missionPicker}
+    </div>
+    <div class="cfv-section">
+      <div class="cfv-section-head">
+        <span class="cfv-section-title">Linked Threads</span>
+        <button class="cfv-link-btn" onclick="toggleCfvPicker(${c.id},'threads')">${cfvPickerOpen==='threads'?'Close':'+ Link'}</button>
+      </div>
+      ${linkedThreads||'<div class="cfv-empty">No linked threads</div>'}
+      ${threadPicker}
+    </div>
+    <div class="cfv-section">
+      <div class="cfv-section-head">
+        <span class="cfv-section-title">Linked Lore & Places</span>
+        <button class="cfv-link-btn" onclick="toggleCfvPicker(${c.id},'lore')">${cfvPickerOpen==='lore'?'Close':'+ Link'}</button>
+      </div>
+      ${linkedLore||'<div class="cfv-empty">No linked lore</div>'}
+      ${lorePicker}
+    </div>
+    <div style="margin-top:1.5rem;display:flex;gap:8px;">
+      <button class="btn btn-sm" onclick="closeCharFullView();openEditChar(${c.id})">Edit Character</button>
+    </div>
+  `;
+
+  // render preview after DOM update
+  setTimeout(()=>{
+    const wrap=document.getElementById('cfv-preview-wrap');
+    if(!wrap)return;
+    if(cfvPreview){
+      wrap.innerHTML=buildPreviewHTML(esc);
+      requestAnimationFrame(()=>wrap.classList.add('open'));
+    } else {
+      wrap.classList.remove('open');
+    }
+  },10);
+}
+
+function toggleCfvPicker(charId,section){
+  cfvPickerOpen=cfvPickerOpen===section?null:section;
+  const c=state.characters.find(x=>x.id===charId);if(c)renderCharFullView(c);
+}
+
+function linkToChar(charId,field,itemId){
+  const c=state.characters.find(x=>x.id===charId);if(!c)return;
+  if(!c[field])c[field]=[];
+  if(!c[field].includes(itemId)){c[field].push(itemId);saveState();}
+  renderCharFullView(c);
+}
+
+function unlinkFromChar(charId,field,itemId){
+  const c=state.characters.find(x=>x.id===charId);if(!c)return;
+  c[field]=(c[field]||[]).filter(x=>x!==itemId);
+  // close preview if we just unlinked the previewed item
+  if(cfvPreview && cfvPreview.id===itemId) cfvPreview=null;
+  saveState();
+  renderCharFullView(c);
+}
+
+function toggleCfvPreview(charId,type,id){
+  if(cfvPreview && cfvPreview.type===type && cfvPreview.id===id){
+    cfvPreview=null;
+  } else {
+    cfvPreview={type,id};
+  }
+  const c=state.characters.find(x=>x.id===charId);if(c)renderCharFullView(c);
+}
+
+function buildPreviewHTML(esc){
+  if(!cfvPreview) return '';
+  const p=cfvPreview;
+  let label='',title='',sub='',body='',meta='';
+  if(p.type==='mission'){
+    const m=state.missions.find(x=>x.id===p.id);if(!m)return '';
+    label='Mission';
+    title=esc(m.title);
+    sub=`${m.status}${m.session?' — Session '+m.session:''}`;
+    body=esc(m.body);
+    meta=m.giver?`<span>Given by: ${esc(m.giver)}</span>`:'';
+  } else if(p.type==='thread'){
+    const t=state.threads.find(x=>x.id===p.id);if(!t)return '';
+    label='Thread';
+    title=esc(t.text);
+    sub=t.resolved?'Resolved':'Open';
+    if(t.session) meta=`<span>${esc(t.session)}</span>`;
+  } else if(p.type==='lore'){
+    const l=state.lore.find(x=>x.id===p.id);if(!l)return '';
+    label=l.type||'Lore';
+    title=esc(l.name);
+    sub=l.type||'';
+    body=esc(l.body);
+  }
+  return `<div class="cfv-preview">
+    <div class="cfv-pv-label">${label}</div>
+    <div class="cfv-pv-title">${title}</div>
+    ${sub?`<div class="cfv-pv-sub">${sub}</div>`:''}
+    ${body?`<div class="cfv-pv-body">${body}</div>`:''}
+    ${meta?`<div class="cfv-pv-meta">${meta}</div>`:''}
+  </div>`;
+}
+
 // ── MISSIONS ─────────────────────────────────────
 function renderMissions(){
   let ms=state.missions;
@@ -922,8 +1277,8 @@ function renderMissions(){
   document.getElementById('mission-list').innerHTML=ms.length?ms.map(m=>`
     <div class="mission-card ${m.status==='complete'?'complete':''}">
       <div class="mlabel">${m.status==='complete'?'Complete':'Active Mission'}</div>
-      <div class="mtitle">${m.title}</div>
-      <div class="mbody">${m.body}</div>
+      <div class="mtitle">${renderMentions(m.title)}</div>
+      <div class="mbody">${renderMentions(m.body)}</div>
       <div class="mfooter">
         ${m.giver?`<span>Given by: ${m.giver}</span>`:''}
         ${m.session?`<span>Session ${m.session}</span>`:''}
@@ -954,7 +1309,7 @@ function renderThreads(){
     <div class="thread-item">
       <span class="thread-sym ${t.resolved?'res':''}">${t.resolved?'✓':'?'}</span>
       <div style="flex:1">
-        <div class="thread-text ${t.resolved?'res':''}">${t.text}</div>
+        <div class="thread-text ${t.resolved?'res':''}">${renderMentions(t.text)}</div>
         ${t.session?`<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink4);margin-top:2px">${t.session}</div>`:''}
       </div>
       <button class="btn btn-sm" style="margin-right:4px" onclick="toggleThread(${t.id})">${t.resolved?'Reopen':'Resolve'}</button>
@@ -978,12 +1333,12 @@ function deleteThread(id){state.threads=state.threads.filter(t=>t.id!==id);saveS
 function renderLore(){
   let ls=state.lore;if(loreFilter!=='all')ls=ls.filter(l=>l.type===loreFilter);
   document.getElementById('lore-list').innerHTML=ls.length?ls.map(l=>`
-    <div class="lore-card">
+    <div class="lore-card" style="cursor:pointer;" onclick="openLorePanel(${l.id})">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;">
         <div><div class="lore-name">${l.name}</div><div class="lore-type">${l.type}</div></div>
-        <div class="row-actions"><button onclick="deleteLore(${l.id})">✕</button></div>
+        <div class="row-actions"><button onclick="event.stopPropagation();openEditLore(${l.id})">edit</button><button onclick="event.stopPropagation();deleteLore(${l.id})">✕</button></div>
       </div>
-      <div class="lore-body">${l.body}</div>
+      <div class="lore-body">${renderMentions(l.body)}</div>
     </div>`).join(''):`<div class="empty-state">No ${loreFilter==='all'?'':loreFilter} entries yet.</div>`;
 }
 
@@ -998,6 +1353,25 @@ function addLore(){
 
 function deleteLore(id){if(!confirm('Delete this entry?'))return;state.lore=state.lore.filter(l=>l.id!==id);saveState();renderLore();}
 
+let editingLoreId=null;
+function openEditLore(id){
+  const l=state.lore.find(x=>x.id===id);if(!l)return;
+  editingLoreId=id;
+  document.getElementById('elm-name').value=l.name;
+  document.getElementById('elm-type').value=l.type||'lore';
+  document.getElementById('elm-body').value=l.body||'';
+  document.getElementById('lore-modal').classList.add('open');
+}
+function saveEditLore(){
+  const l=state.lore.find(x=>x.id===editingLoreId);if(!l)return;
+  l.name=document.getElementById('elm-name').value.trim();
+  l.type=document.getElementById('elm-type').value;
+  l.body=document.getElementById('elm-body').value.trim();
+  saveState();renderLore();closeLoreModal();
+}
+function closeLoreModal(){document.getElementById('lore-modal').classList.remove('open');editingLoreId=null;}
+document.getElementById('lore-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeLoreModal();});
+
 // ── SEARCH ───────────────────────────────────────
 function setSearchCat(cat,btn){searchCat=cat;document.querySelectorAll('#panel-search .filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');doSearch();}
 
@@ -1007,32 +1381,39 @@ function doSearch(){
   const q=document.getElementById('search-input').value.trim().toLowerCase();
   const el=document.getElementById('search-results');
   if(!q){el.innerHTML='<div class="empty-state">Start typing to search across all notes.</div>';return;}
-  const results=[];
+  const charResults=[];
+  const otherResults=[];
   const match=str=>str&&str.toLowerCase().includes(q);
 
-  if(searchCat==='all'||searchCat==='events'){
-    Object.entries(state.sessions).forEach(([sess,evs])=>{
-      evs.forEach(e=>{if(match(e.m)||match(e.d))results.push({src:`S${sess}·event`,main:e.m,det:e.d});});
-    });
-  }
+  // Characters first — prioritised
   if(searchCat==='all'||searchCat==='characters'){
     state.characters.forEach(c=>{
       if(match(c.name)||match(c.desc)||match(c.notes)||match(c.race)||match(c.location))
-        results.push({src:`character`,main:`${c.name} (${c.status})`,det:[c.desc,c.notes,c.location].filter(Boolean).join(' · ')});
+        charResults.push({src:`character`,main:`${c.name} (${c.status})`,det:[c.desc,c.notes,c.location].filter(Boolean).join(' · ')});
+    });
+  }
+  if(searchCat==='all'||searchCat==='events'){
+    Object.entries(state.sessions).forEach(([sess,evs])=>{
+      evs.forEach(e=>{if(match(e.m)||match(e.d))otherResults.push({src:`S${sess}·event`,main:e.m,det:e.d});});
     });
   }
   if(searchCat==='all'||searchCat==='missions'){
     state.missions.forEach(m=>{
-      if(match(m.title)||match(m.body)||match(m.giver))results.push({src:`mission·${m.status}`,main:m.title,det:m.body});
+      if(m.status==='complete')return;
+      if(match(m.title)||match(m.body)||match(m.giver))otherResults.push({src:`mission·${m.status}`,main:m.title,det:m.body});
     });
   }
   if(searchCat==='all'||searchCat==='threads'){
-    state.threads.forEach(t=>{if(match(t.text))results.push({src:`thread·${t.resolved?'resolved':'open'}`,main:t.text,det:t.session});});
+    state.threads.forEach(t=>{
+      if(t.resolved)return;
+      if(match(t.text))otherResults.push({src:`thread·open`,main:t.text,det:t.session});
+    });
   }
   if(searchCat==='all'||searchCat==='lore'){
-    state.lore.forEach(l=>{if(match(l.name)||match(l.body))results.push({src:`lore·${l.type}`,main:l.name,det:l.body});});
+    state.lore.forEach(l=>{if(match(l.name)||match(l.body))otherResults.push({src:`lore·${l.type}`,main:l.name,det:l.body});});
   }
 
+  const results=[...charResults,...otherResults];
   el.innerHTML=results.length?results.map(r=>`
     <div class="sr"><div class="sr-src">${r.src}</div>
     <div><div class="sr-main">${hl(r.main,q)}</div>${r.det?`<div class="sr-det">${hl(r.det,q)}</div>`:''}</div></div>`
@@ -1083,6 +1464,440 @@ document.addEventListener('click', e => {
     }
   }
 });
+// ── @MENTIONS ───────────────────────────────────
+// Build a combined list of mentionable items (characters + lore)
+function getMentionables(){
+  const items=[];
+  state.characters.forEach(c=>items.push({type:'character',id:c.id,name:c.name,sub:c.race||c.status}));
+  state.lore.forEach(l=>items.push({type:'lore',id:l.id,name:l.name,sub:l.type||'lore'}));
+  return items;
+}
+
+// Parse @[Name] in text and return HTML with clickable mention spans
+function renderMentions(text){
+  if(!text)return '';
+  return String(text).replace(/@\[([^\]]+)\]/g,(match,name)=>{
+    // find which entity this refers to
+    const c=state.characters.find(x=>x.name.toLowerCase()===name.toLowerCase());
+    if(c) return `<span class="mention" onclick="openMentionPanel(&quot;character&quot;,${c.id})">${c.name}</span>`;
+    const l=state.lore.find(x=>x.name.toLowerCase()===name.toLowerCase());
+    if(l) return `<span class="mention" onclick="openMentionPanel(&quot;lore&quot;,${l.id})">${l.name}</span>`;
+    // no match — just show the name styled
+    return `<span class="mention" style="opacity:0.5;cursor:default">${name}</span>`;
+  });
+}
+
+// Render mentions for use inside the side panel — clicks open the sub-panel
+function renderMentionsForPanel(text){
+  if(!text)return '';
+  return String(text).replace(/@\[([^\]]+)\]/g,(match,name)=>{
+    const c=state.characters.find(x=>x.name.toLowerCase()===name.toLowerCase());
+    if(c) return `<span class="mention" onclick="event.stopPropagation();openMentionSubPanel(&quot;character&quot;,${c.id})">${c.name}</span>`;
+    const l=state.lore.find(x=>x.name.toLowerCase()===name.toLowerCase());
+    if(l) return `<span class="mention" onclick="event.stopPropagation();openMentionSubPanel(&quot;lore&quot;,${l.id})">${l.name}</span>`;
+    return `<span class="mention" style="opacity:0.5;cursor:default">${name}</span>`;
+  });
+}
+
+// ── AUTOCOMPLETE ────────────────────────────────
+const acEl=document.getElementById('mention-ac');
+let acActive=false, acQuery='', acStart=-1, acItems=[], acSelected=0, acTarget=null;
+
+function positionAC(textarea){
+  const rect=textarea.getBoundingClientRect();
+  // Create a hidden mirror div to measure caret position
+  const mirror=document.createElement('div');
+  const style=getComputedStyle(textarea);
+  mirror.style.cssText=`position:fixed;top:-9999px;left:-9999px;white-space:pre-wrap;word-wrap:break-word;font:${style.font};padding:${style.padding};border:${style.border};width:${style.width};line-height:${style.lineHeight};letter-spacing:${style.letterSpacing};`;
+  const text=textarea.value.substring(0,textarea.selectionStart);
+  mirror.textContent=text;
+  const span=document.createElement('span');
+  span.textContent='|';
+  mirror.appendChild(span);
+  document.body.appendChild(mirror);
+  const spanRect=span.getBoundingClientRect();
+  const mirrorRect=mirror.getBoundingClientRect();
+  // caret offset relative to textarea
+  const caretOffsetTop=spanRect.top-mirrorRect.top;
+  const caretOffsetLeft=spanRect.left-mirrorRect.left;
+  document.body.removeChild(mirror);
+  // Position dropdown below the caret line
+  const lineHeight=parseInt(style.lineHeight)||18;
+  let top=rect.top+caretOffsetTop-textarea.scrollTop+lineHeight+4;
+  let left=rect.left+Math.min(caretOffsetLeft, rect.width-40);
+  // If it would go below viewport, show above
+  if(top+180>window.innerHeight) top=rect.top+caretOffsetTop-textarea.scrollTop-184;
+  acEl.style.left=Math.max(8,left)+'px';
+  acEl.style.top=Math.max(8,top)+'px';
+  acEl.style.minWidth=Math.min(rect.width,280)+'px';
+}
+
+function showAC(textarea,query){
+  acQuery=query.toLowerCase();
+  const all=getMentionables();
+  acItems=all.filter(x=>x.name.toLowerCase().includes(acQuery));
+  if(!acItems.length){hideAC();return;}
+  acSelected=0;
+  acEl.innerHTML=acItems.map((item,i)=>`
+    <div class="mention-ac-item ${i===0?'selected':''}" data-idx="${i}" onmousedown="selectACItem(${i})">
+      <span class="mention-ac-name">${item.name}</span>
+      <span class="mention-ac-type">${item.type==='character'?item.sub||'character':item.sub}</span>
+    </div>`).join('');
+  positionAC(textarea);
+  acEl.classList.add('open');
+  acActive=true;
+}
+
+function hideAC(){
+  acEl.classList.remove('open');
+  acActive=false;acTarget=null;
+}
+
+function selectACItem(idx){
+  const item=acItems[idx];if(!item||!acTarget)return;
+  const el=acTarget;
+  const insert=`@[${item.name}]`;
+
+  if(acIsContentEditable){
+    // For contenteditable: delete back to @ and insert the mention text
+    const sel=window.getSelection();
+    if(!sel.rangeCount){hideAC();return;}
+    const range=sel.getRangeAt(0);
+    // Walk back from cursor to find @ in the text node
+    const node=range.startContainer;
+    if(node.nodeType===Node.TEXT_NODE){
+      const text=node.textContent;
+      const cursorPos=range.startOffset;
+      // Find @ position in this text node
+      let atIdx=-1;
+      for(let i=cursorPos-1;i>=0;i--){if(text[i]==='@'){atIdx=i;break;}}
+      if(atIdx>=0){
+        node.textContent=text.substring(0,atIdx)+insert+text.substring(cursorPos);
+        // Place cursor after inserted text
+        const newPos=atIdx+insert.length;
+        range.setStart(node,newPos);
+        range.setEnd(node,newPos);
+        sel.removeAllRanges();sel.addRange(range);
+      }
+    }
+    hideAC();
+    el.focus();
+    el.dispatchEvent(new Event('input',{bubbles:true}));
+  } else {
+    // For textarea/input
+    const before=el.value.substring(0,acStart);
+    const after=el.value.substring(el.selectionStart);
+    el.value=before+insert+after;
+    const pos=acStart+insert.length;
+    el.selectionStart=el.selectionEnd=pos;
+    hideAC();
+    el.focus();
+    el.dispatchEvent(new Event('input',{bubbles:true}));
+  }
+}
+
+// Global keyboard/input listeners for textareas and contenteditable
+let acIsContentEditable=false;
+document.addEventListener('input',function(e){
+  const el=e.target;
+  const isCE=el.isContentEditable;
+  const isTA=el.tagName==='TEXTAREA'||el.tagName==='INPUT';
+  if(!isTA&&!isCE)return;
+
+  let val,cursor;
+  if(isCE){
+    // Get text before cursor in contenteditable
+    const sel=window.getSelection();
+    if(!sel.rangeCount)return;
+    const range=sel.getRangeAt(0);
+    const preRange=range.cloneRange();
+    preRange.selectNodeContents(el);
+    preRange.setEnd(range.startContainer,range.startOffset);
+    val=preRange.toString();
+    cursor=val.length;
+    acIsContentEditable=true;
+  } else {
+    val=el.value;
+    cursor=el.selectionStart;
+    acIsContentEditable=false;
+  }
+
+  // Find the @ that starts the current mention
+  let atPos=-1;
+  for(let i=cursor-1;i>=0;i--){
+    if(val[i]==='@'){atPos=i;break;}
+    if(val[i]===' '||val[i]==='\n'||val[i]===']')break;
+  }
+  if(atPos>=0){
+    const query=val.substring(atPos+1,cursor);
+    if(query.length>=1){
+      acStart=atPos;
+      acTarget=el;
+      showAC(el,query);
+    } else {
+      hideAC();
+    }
+  } else {
+    if(acActive)hideAC();
+  }
+});
+
+document.addEventListener('keydown',function(e){
+  if(!acActive)return;
+  if(e.key==='ArrowDown'){
+    e.preventDefault();
+    acSelected=Math.min(acSelected+1,acItems.length-1);
+    updateACSelection();
+  } else if(e.key==='ArrowUp'){
+    e.preventDefault();
+    acSelected=Math.max(acSelected-1,0);
+    updateACSelection();
+  } else if(e.key==='Enter'||e.key==='Tab'){
+    if(acActive&&acItems.length){e.preventDefault();selectACItem(acSelected);}
+  } else if(e.key==='Escape'){
+    hideAC();
+  }
+});
+
+function updateACSelection(){
+  acEl.querySelectorAll('.mention-ac-item').forEach((el,i)=>{
+    el.classList.toggle('selected',i===acSelected);
+  });
+  // scroll selected into view
+  const sel=acEl.querySelector('.selected');
+  if(sel)sel.scrollIntoView({block:'nearest'});
+}
+
+// Close AC when clicking outside
+document.addEventListener('mousedown',function(e){
+  if(acActive&&!acEl.contains(e.target)){hideAC();}
+});
+
+// ── MENTION SIDE PANEL ──────────────────────────
+const mpBg=document.getElementById('mention-panel-bg');
+const mpEl=document.getElementById('mention-panel');
+
+function buildMentionDetailHTML(type,id){
+  if(type==='character'){
+    const c=state.characters.find(x=>x.id===id);if(!c)return '';
+    let html=`<div class="mp-id-label">Character</div>
+      <div class="mp-id-title">${c.name}</div>
+      ${c.race?`<div class="mp-id-sub">${c.race}</div>`:''}
+      <div style="margin-bottom:6px"><span class="tag tag-${c.status}">${c.status}</span></div>
+      ${c.desc?`<div class="mp-id-body">${c.desc}</div>`:''}
+      ${c.location?`<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink4);margin-top:6px">📍 ${c.location}</div>`:''}`;
+    return html;
+  } else if(type==='lore'){
+    const l=state.lore.find(x=>x.id===id);if(!l)return '';
+    return `<div class="mp-id-label">${l.type||'Lore'}</div>
+      <div class="mp-id-title">${l.name}</div>
+      <div class="mp-id-sub">${l.type||'lore'}</div>
+      ${l.body?`<div class="mp-id-body">${l.body}</div>`:''}`;
+  }
+  return '';
+}
+
+function openMentionPanel(type,id){
+  // If the side panel is already open, show inline detail instead
+  if(mpEl.classList.contains('open')){
+    showInlineMentionDetail(type,id);
+    return;
+  }
+  let html='';
+  if(type==='character'){
+    const c=state.characters.find(x=>x.id===id);if(!c)return;
+    html=`<button class="mp-close" onclick="closeMentionPanel()">✕</button>
+      <div class="mp-label">Character</div>
+      <div class="mp-title">${c.name}</div>
+      ${c.race?`<div class="mp-sub">${c.race}</div>`:''}
+      <div style="margin-bottom:10px"><span class="tag tag-${c.status}">${c.status}</span></div>
+      ${c.desc?`<div class="mp-body">${c.desc}</div>`:''}
+      ${c.notes?`<div class="mp-notes">${c.notes}</div>`:''}
+      ${c.location?`<div class="mp-meta"><span>📍 ${c.location}</span></div>`:''}`;
+    const sections=[];
+    if(c.linkedMissions&&c.linkedMissions.length){
+      const items=c.linkedMissions.map(mid=>{const m=state.missions.find(x=>x.id===mid);return m?`<div class="mp-linked"><strong>${m.title}</strong> <span style="font-size:10px;color:var(--ink4)">${m.status}</span></div>`:''}).join('');
+      sections.push(`<div class="mp-section"><div class="mp-section-title">Linked Missions</div>${items}</div>`);
+    }
+    if(c.linkedThreads&&c.linkedThreads.length){
+      const items=c.linkedThreads.map(tid=>{const t=state.threads.find(x=>x.id===tid);return t?`<div class="mp-linked">${t.text}</div>`:''}).join('');
+      sections.push(`<div class="mp-section"><div class="mp-section-title">Linked Threads</div>${items}</div>`);
+    }
+    if(c.linkedLore&&c.linkedLore.length){
+      const items=c.linkedLore.map(lid=>{const l=state.lore.find(x=>x.id===lid);return l?`<div class="mp-linked"><strong>${l.name}</strong> <span style="font-size:10px;color:var(--ink4)">${l.type}</span></div>`:''}).join('');
+      sections.push(`<div class="mp-section"><div class="mp-section-title">Linked Lore & Places</div>${items}</div>`);
+    }
+    html+=sections.join('');
+  } else if(type==='lore'){
+    openLorePanel(id);return;
+  }
+  mpEl.innerHTML=html;
+  mpBg.classList.add('open');
+  requestAnimationFrame(()=>mpEl.classList.add('open'));
+}
+
+function showInlineMentionDetail(type,id){
+  // Remove any existing inline detail
+  const existing=mpEl.querySelector('.mp-inline-detail');
+  if(existing) existing.remove();
+  const content=buildMentionDetailHTML(type,id);
+  if(!content)return;
+  const div=document.createElement('div');
+  div.className='mp-inline-detail';
+  div.innerHTML=`<button class="mp-id-close" onclick="this.parentElement.remove()">✕</button>${content}`;
+  // Insert after the description body or at the end before the deep section
+  const deepSection=mpEl.querySelector('.mp-deep-section');
+  if(deepSection){
+    mpEl.insertBefore(div,deepSection);
+  } else {
+    mpEl.appendChild(div);
+  }
+  div.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function closeMentionPanel(){
+  saveLorePanelDeep(); // save any open rich text
+  closeMentionSubPanel();
+  mpEl.classList.remove('open');
+  setTimeout(()=>{mpBg.classList.remove('open');mpEl.innerHTML='';lorePanelId=null;},300);
+}
+mpBg.addEventListener('click',closeMentionPanel);
+
+// ── MENTION SUB-PANEL ───────────────────────────
+const mspEl=document.getElementById('mention-subpanel');
+
+function openMentionSubPanel(type,id){
+  let html=`<button class="msp-close" onclick="closeMentionSubPanel()">✕</button>`;
+  if(type==='character'){
+    const c=state.characters.find(x=>x.id===id);if(!c)return;
+    html+=`<div class="mp-label">Character</div>
+      <div class="mp-title" style="font-size:20px">${c.name}</div>
+      ${c.race?`<div class="mp-sub">${c.race}</div>`:''}
+      <div style="margin-bottom:10px"><span class="tag tag-${c.status}">${c.status}</span></div>
+      ${c.desc?`<div class="mp-body">${c.desc}</div>`:''}
+      ${c.notes?`<div class="mp-notes">${c.notes}</div>`:''}
+      ${c.location?`<div class="mp-meta"><span>📍 ${c.location}</span></div>`:''}`;
+    if(c.linkedMissions&&c.linkedMissions.length){
+      html+=`<div class="mp-section"><div class="mp-section-title">Linked Missions</div>${c.linkedMissions.map(mid=>{const m=state.missions.find(x=>x.id===mid);return m?`<div class="mp-linked"><strong>${m.title}</strong> <span style="font-size:10px;color:var(--ink4)">${m.status}</span></div>`:''}).join('')}</div>`;
+    }
+    if(c.linkedLore&&c.linkedLore.length){
+      html+=`<div class="mp-section"><div class="mp-section-title">Linked Lore</div>${c.linkedLore.map(lid=>{const lo=state.lore.find(x=>x.id===lid);return lo?`<div class="mp-linked"><strong>${lo.name}</strong> <span style="font-size:10px;color:var(--ink4)">${lo.type}</span></div>`:''}).join('')}</div>`;
+    }
+  } else if(type==='lore'){
+    const l=state.lore.find(x=>x.id===id);if(!l)return;
+    html+=`<div class="mp-label">${l.type||'Lore'}</div>
+      <div class="mp-title" style="font-size:20px">${l.name}</div>
+      <div class="mp-sub">${l.type||'lore'}</div>
+      ${l.body?`<div class="mp-body">${l.body}</div>`:''}`;
+    const linkedChars=state.characters.filter(c=>(c.linkedLore||[]).includes(l.id));
+    if(linkedChars.length){
+      html+=`<div class="mp-section"><div class="mp-section-title">Related Characters</div>${linkedChars.map(c=>`<div class="mp-linked"><strong>${c.name}</strong> <span style="font-size:10px;color:var(--ink4)">${c.status}</span></div>`).join('')}</div>`;
+    }
+  }
+  mspEl.innerHTML=html;
+  requestAnimationFrame(()=>mspEl.classList.add('open'));
+}
+
+function closeMentionSubPanel(){
+  mspEl.classList.remove('open');
+  setTimeout(()=>{mspEl.innerHTML='';},300);
+}
+
+// ── LORE SIDE PANEL ─────────────────────────────
+let lorePanelId=null;
+let deepExpanded=false;
+
+function openLorePanel(id){
+  saveLorePanelDeep(); // save previous if open
+  closeMentionSubPanel();
+  const l=state.lore.find(x=>x.id===id);if(!l)return;
+  lorePanelId=id;
+  if(!l.deepBody) l.deepBody='';
+  deepExpanded=false; // editor starts collapsed
+
+  const linkedChars=state.characters.filter(c=>(c.linkedLore||[]).includes(l.id));
+  const charSection=linkedChars.length?`<div class="mp-section"><div class="mp-section-title">Related Characters</div>${linkedChars.map(c=>`<div class="mp-linked"><strong>${c.name}</strong> <span style="font-size:10px;color:var(--ink4)">${c.status}</span></div>`).join('')}</div>`:'';
+
+  // Deep body display (read-only rendered version, with mentions clickable to sub-panel)
+  const deepDisplay=l.deepBody?`<div class="mp-deep-display" id="deep-display">${renderMentionsForPanel(l.deepBody)}</div>`:'';
+
+  mpEl.innerHTML=`<button class="mp-close" onclick="closeMentionPanel()">✕</button>
+    <div class="mp-label">${l.type||'Lore'}</div>
+    <div class="mp-title">${l.name}</div>
+    <div class="mp-sub">${l.type||'lore'}</div>
+    ${l.body?`<div class="mp-body">${renderMentionsForPanel(l.body)}</div>`:''}
+    ${deepDisplay}
+    ${charSection}
+    <div class="mp-deep-section">
+      <div class="mp-deep-toggle" onclick="toggleDeepSection()">
+        <span class="mp-section-title">Edit In-Depth</span>
+        <span class="mp-deep-arrow" id="deep-arrow">▶</span>
+      </div>
+      <div id="deep-editor-wrap" style="display:none">
+        <div class="rte-toolbar">
+          <button class="rte-btn" onmousedown="event.preventDefault();rteCmd('bold')" title="Bold"><strong>B</strong></button>
+          <button class="rte-btn" onmousedown="event.preventDefault();rteCmd('italic')" title="Italic"><em>I</em></button>
+          <button class="rte-btn" onmousedown="event.preventDefault();rteHeading()" title="Heading">H</button>
+          <button class="rte-btn" onmousedown="event.preventDefault();rteCmd('insertHorizontalRule')" title="Divider">—</button>
+        </div>
+        <div class="rte-editor" id="rte-editor" contenteditable="true" data-placeholder="Write detailed lore, history, secrets..." oninput="debounceSaveDeep()"></div>
+      </div>
+    </div>`;
+
+  // Load deep content into editor
+  setTimeout(()=>{
+    const editor=document.getElementById('rte-editor');
+    if(editor) editor.innerHTML=l.deepBody||'';
+  },10);
+
+  mpBg.classList.add('open');
+  requestAnimationFrame(()=>mpEl.classList.add('open'));
+}
+
+function toggleDeepSection(){
+  deepExpanded=!deepExpanded;
+  const wrap=document.getElementById('deep-editor-wrap');
+  const arrow=document.getElementById('deep-arrow');
+  if(wrap) wrap.style.display=deepExpanded?'block':'none';
+  if(arrow) arrow.classList.toggle('open',deepExpanded);
+}
+
+// Rich text commands
+function rteCmd(cmd,val){document.execCommand(cmd,false,val||null);}
+function rteHeading(){document.execCommand('formatBlock',false,'h3');}
+
+// Save deep body with debounce
+let deepSaveTimer=null;
+function debounceSaveDeep(){
+  clearTimeout(deepSaveTimer);
+  deepSaveTimer=setTimeout(()=>saveLorePanelDeep(),800);
+}
+function saveLorePanelDeep(){
+  if(!lorePanelId)return;
+  const editor=document.getElementById('rte-editor');
+  if(!editor)return;
+  const l=state.lore.find(x=>x.id===lorePanelId);
+  if(!l)return;
+  const content=editor.innerHTML;
+  if(l.deepBody!==content){
+    l.deepBody=content;
+    saveState();
+    // Update the read-only display with mentions parsed
+    const display=document.getElementById('deep-display');
+    if(display){
+      display.innerHTML=renderMentionsForPanel(content);
+    } else if(content){
+      // Create display if it doesn't exist yet
+      const bodyEl=mpEl.querySelector('.mp-body');
+      const newDisplay=document.createElement('div');
+      newDisplay.className='mp-deep-display';
+      newDisplay.id='deep-display';
+      newDisplay.innerHTML=renderMentionsForPanel(content);
+      if(bodyEl){bodyEl.after(newDisplay);}
+    }
+  }
+}
+
 // ── INIT ─────────────────────────────────────────
 function renderAll(){renderSessions();renderChars();renderMissions();renderThreads();renderLore();}
 loadFromCloud();
