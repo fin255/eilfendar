@@ -74,6 +74,7 @@ body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georg
 .row-actions button:hover{color:var(--accent);}
 /* TAGS */
 .tag{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:500;letter-spacing:0.08em;padding:2px 7px;text-transform:uppercase;border-radius:2px;}
+.tag-player{background:rgba(30,90,160,0.18);color:#1e5aa0;}
 .tag-ally{background:rgba(26,107,90,0.15);color:var(--teal);}
 .tag-leader{background:rgba(74,53,112,0.15);color:var(--purple);}
 .tag-threat{background:rgba(139,32,32,0.12);color:var(--accent);}
@@ -111,7 +112,8 @@ body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georg
 .filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem;}
 .filter-btn{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px;border:1px solid var(--border);background:transparent;color:var(--ink3);cursor:pointer;transition:all 0.12s;}
 .filter-btn.active{background:var(--ink);color:var(--paper);border-color:var(--ink);}.filter-btn:hover:not(.active){background:var(--paper2);}
-.sr{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border2);animation:fadeIn 0.2s ease;}
+.sr{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border2);animation:fadeIn 0.2s ease;cursor:pointer;transition:background 0.12s;}
+.sr:hover{background:var(--paper2);}
 .sr:last-child{border-bottom:none;}
 .sr-src{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink4);white-space:nowrap;flex-shrink:0;margin-top:3px;}
 .sr-main{font-size:14px;color:var(--ink);}
@@ -369,16 +371,19 @@ select{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.04e
 <div class="panel" id="panel-characters">
   <div style="height:1.5rem"></div>
   <div class="sec-head">
-    <span>All characters</span>
-    <div class="filter-row" style="margin:0">
-      <button class="filter-btn active" onclick="filterChars('all',this)">All</button>
-      <button class="filter-btn" onclick="filterChars('ally',this)">Ally</button>
-      <button class="filter-btn" onclick="filterChars('leader',this)">Leader</button>
-      <button class="filter-btn" onclick="filterChars('neutral',this)">Neutral</button>
-      <button class="filter-btn" onclick="filterChars('unknown',this)">Unknown</button>
-      <button class="filter-btn" onclick="filterChars('threat',this)">Threat</button>
-      <button class="filter-btn" onclick="filterChars('enemy',this)">Enemy</button>
-      <button class="filter-btn" onclick="filterChars('dead',this)">Dead</button>
+    <span>Characters</span>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <div style="position:relative;">
+        <input type="text" id="char-link-filter" placeholder="Filter by lore, place, mission…" autocomplete="off" oninput="if(charLinkFilter){clearLinkFilter();}renderLinkFilterDropdown()" onfocus="renderLinkFilterDropdown()" style="width:220px;font-size:12px;padding:5px 24px 5px 10px;">
+        <button id="char-link-clear" onclick="clearLinkFilter()" style="display:none;position:absolute;right:4px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--ink4);padding:0 4px;">✕</button>
+        <div id="char-link-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--paper);border:1.5px solid var(--ink);max-height:200px;overflow-y:auto;z-index:50;box-shadow:0 4px 16px rgba(26,23,20,0.15);"></div>
+      </div>
+      <div style="position:relative;">
+        <button id="char-status-btn" onclick="toggleStatusDropdown()" style="width:220px;font-family:'IBM Plex Mono',monospace;font-size:12px;padding:5px 10px;border:1px solid var(--border);background:var(--paper2);color:var(--ink);cursor:pointer;text-align:left;letter-spacing:0.04em;display:flex;justify-content:space-between;align-items:center;">
+          <span id="char-status-label">All</span><span style="font-size:10px">▼</span>
+        </button>
+        <div id="char-status-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--paper);border:1.5px solid var(--ink);max-height:200px;overflow-y:auto;z-index:50;box-shadow:0 4px 16px rgba(26,23,20,0.15);"></div>
+      </div>
     </div>
   </div>
   <div id="char-list"></div>
@@ -392,7 +397,7 @@ select{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.04e
     <textarea id="c-notes" placeholder="Private notes — motivations, secrets..." class="mb8"></textarea>
     <div class="form-row">
       <select id="c-status">
-        <option value="ally">Ally</option><option value="leader">Leader</option>
+        <option value="player">Player</option><option value="ally">Ally</option><option value="leader">Leader</option>
         <option value="neutral">Neutral</option><option value="unknown">Unknown</option>
         <option value="threat">Threat?</option><option value="enemy">Enemy</option><option value="dead">Dead</option>
       </select>
@@ -537,7 +542,7 @@ select{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.04e
     <label>Race / class</label><input type="text" id="em-race">
     <label>Status</label>
     <select id="em-status">
-      <option value="ally">Ally</option><option value="leader">Leader</option>
+      <option value="player">Player</option><option value="ally">Ally</option><option value="leader">Leader</option>
       <option value="neutral">Neutral</option><option value="unknown">Unknown</option>
       <option value="threat">Threat?</option><option value="enemy">Enemy</option><option value="dead">Dead</option>
     </select>
@@ -1039,10 +1044,29 @@ function deleteEvent(i){state.sessions[currentSession].splice(i,1);saveState();r
 document.getElementById('new-main').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addEvent();}});
 
 // ── CHARACTERS ───────────────────────────────────
+let showAllChars=false;
+let charPage=1;
+const CHARS_PREVIEW=5;
+const CHARS_PER_PAGE=10;
 function renderChars(){
   let chars=state.characters;
   if(charFilter!=='all')chars=chars.filter(c=>c.status===charFilter);
-  document.getElementById('char-list').innerHTML=chars.length?chars.map(c=>`
+  if(charLinkFilter) chars=chars.filter(c=>(c[charLinkFilter.field]||[]).includes(charLinkFilter.id));
+  // Show most recently created first
+  const sorted=[...chars].reverse();
+  const hasMore=sorted.length>CHARS_PREVIEW&&!showAllChars;
+  const totalPages=Math.ceil(sorted.length/CHARS_PER_PAGE);
+  if(charPage>totalPages)charPage=totalPages||1;
+
+  let visible;
+  if(!showAllChars){
+    visible=sorted.slice(0,CHARS_PREVIEW);
+  } else {
+    const start=(charPage-1)*CHARS_PER_PAGE;
+    visible=sorted.slice(start,start+CHARS_PER_PAGE);
+  }
+
+  const renderCard=c=>`
     <div class="char-card" style="cursor:pointer;" onclick="openCharFullView(${c.id})">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;">
         <div><div class="char-name">${c.name}</div>${c.race?`<div class="char-race">${c.race}</div>`:''}</div>
@@ -1054,10 +1078,101 @@ function renderChars(){
         <span class="tag tag-${c.status}">${c.status}</span>
         ${c.location?`<span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink4)">📍 ${c.location}</span>`:''}
       </div>
-    </div>`).join(''):`<div class="empty-state">No characters with status "${charFilter}".</div>`;
+    </div>`;
+  if(!sorted.length){document.getElementById('char-list').innerHTML=`<div class="empty-state">No characters with status "${charFilter}".</div>`;return;}
+  let html=visible.map(renderCard).join('');
+  if(hasMore) html+=`<div style="text-align:center;padding:10px 0;"><button class="btn btn-sm" onclick="showAllChars=true;charPage=1;renderChars()">See more · ${sorted.length-CHARS_PREVIEW} more characters</button></div>`;
+  if(showAllChars&&totalPages>1){
+    let nav='<div style="display:flex;justify-content:center;align-items:center;gap:4px;padding:12px 0;">';
+    nav+=`<button class="btn btn-sm" onclick="charPage=Math.max(1,charPage-1);renderChars();document.getElementById('char-list').scrollIntoView({behavior:'smooth'})" ${charPage===1?'disabled style="opacity:0.3;pointer-events:none"':''}>‹</button>`;
+    for(let i=1;i<=totalPages;i++){
+      nav+=`<button class="btn btn-sm" onclick="charPage=${i};renderChars();document.getElementById('char-list').scrollIntoView({behavior:'smooth'})" style="${i===charPage?'background:var(--ink);color:var(--paper);':''}">${i}</button>`;
+    }
+    nav+=`<button class="btn btn-sm" onclick="charPage=Math.min(${totalPages},charPage+1);renderChars();document.getElementById('char-list').scrollIntoView({behavior:'smooth'})" ${charPage===totalPages?'disabled style="opacity:0.3;pointer-events:none"':''}>›</button>`;
+    nav+='</div>';
+    html+=nav;
+  }
+  if(showAllChars&&sorted.length>CHARS_PREVIEW) html+=`<div style="text-align:center;padding:4px 0 10px;"><button class="btn btn-sm" onclick="showAllChars=false;charPage=1;renderChars();document.getElementById('char-list').scrollIntoView({behavior:'smooth'})">See less</button></div>`;
+  document.getElementById('char-list').innerHTML=html;
 }
 
-function filterChars(f,btn){charFilter=f;document.querySelectorAll('#panel-characters .filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderChars();}
+function filterCharsSelect(f){charFilter=f;showAllChars=false;charPage=1;renderChars();}
+
+const statusOptions=[
+  {value:'all',label:'All'},{value:'player',label:'Player'},{value:'ally',label:'Ally'},
+  {value:'leader',label:'Leader'},{value:'neutral',label:'Neutral'},{value:'unknown',label:'Unknown'},
+  {value:'threat',label:'Threat'},{value:'enemy',label:'Enemy'},{value:'dead',label:'Dead'}
+];
+
+function toggleStatusDropdown(){
+  const dd=document.getElementById('char-status-dropdown');
+  if(dd.style.display==='block'){dd.style.display='none';return;}
+  dd.innerHTML=statusOptions.map(o=>`<div class="picker-item" style="font-size:12px;padding:6px 10px;${o.value===charFilter?'background:var(--paper3);font-weight:500;':''}" onmousedown="selectStatusOption('${o.value}','${o.label}')">
+    <span>${o.label}</span>${o.value!=='all'?`<span class="tag tag-${o.value}" style="font-size:8px">${o.value}</span>`:''}
+  </div>`).join('');
+  dd.style.display='block';
+}
+
+function selectStatusOption(val,label){
+  document.getElementById('char-status-label').textContent=label;
+  document.getElementById('char-status-dropdown').style.display='none';
+  filterCharsSelect(val);
+}
+
+document.addEventListener('click',e=>{
+  const dd=document.getElementById('char-status-dropdown');
+  const btn=document.getElementById('char-status-btn');
+  if(dd&&btn&&!btn.contains(e.target)&&!dd.contains(e.target)) dd.style.display='none';
+});
+
+// ── LINK FILTER ─────────────────────────────────
+let charLinkFilter=null; // {type:'lore'|'mission'|'thread', id:Number}
+
+function getLinkFilterItems(){
+  const items=[];
+  state.lore.forEach(l=>items.push({type:'lore',id:l.id,name:l.name,sub:l.type||'lore',field:'linkedLore'}));
+  state.missions.forEach(m=>items.push({type:'mission',id:m.id,name:m.title,sub:m.status,field:'linkedMissions'}));
+  state.threads.forEach(t=>items.push({type:'thread',id:t.id,name:t.text,sub:t.resolved?'resolved':'open',field:'linkedThreads'}));
+  return items;
+}
+
+function renderLinkFilterDropdown(){
+  const input=document.getElementById('char-link-filter');
+  const dd=document.getElementById('char-link-dropdown');
+  const q=input.value.trim().toLowerCase();
+  let items=getLinkFilterItems();
+  if(q) items=items.filter(x=>x.name.toLowerCase().includes(q));
+  if(!items.length){dd.style.display='none';return;}
+  dd.innerHTML=items.map(x=>`<div class="picker-item" style="font-size:12px;padding:6px 10px;" onmousedown="applyLinkFilter('${x.type}',${x.id},'${x.field}')">
+    <span>${x.name}</span>
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--ink4);text-transform:uppercase">${x.sub}</span>
+  </div>`).join('');
+  dd.style.display='block';
+}
+
+function applyLinkFilter(type,id,field){
+  charLinkFilter={type,id,field};
+  const item=getLinkFilterItems().find(x=>x.type===type&&x.id===id);
+  const input=document.getElementById('char-link-filter');
+  input.value=item?item.name:'';
+  document.getElementById('char-link-dropdown').style.display='none';
+  document.getElementById('char-link-clear').style.display='block';
+  showAllChars=false;charPage=1;renderChars();
+}
+
+function clearLinkFilter(){
+  charLinkFilter=null;
+  document.getElementById('char-link-filter').value='';
+  document.getElementById('char-link-clear').style.display='none';
+  showAllChars=false;charPage=1;renderChars();
+}
+
+// Close dropdown on outside click
+document.addEventListener('click',e=>{
+  const wrap=document.getElementById('char-link-filter');
+  const dd=document.getElementById('char-link-dropdown');
+  if(dd&&wrap&&!wrap.contains(e.target)&&!dd.contains(e.target)) dd.style.display='none';
+});
 
 function addChar(){
   const name=document.getElementById('c-name').value.trim();if(!name)return;
@@ -1389,35 +1504,63 @@ function doSearch(){
   if(searchCat==='all'||searchCat==='characters'){
     state.characters.forEach(c=>{
       if(match(c.name)||match(c.desc)||match(c.notes)||match(c.race)||match(c.location))
-        charResults.push({src:`character`,main:`${c.name} (${c.status})`,det:[c.desc,c.notes,c.location].filter(Boolean).join(' · ')});
+        charResults.push({src:`character`,main:`${c.name} (${c.status})`,det:[c.desc,c.notes,c.location].filter(Boolean).join(' · '),type:'character',id:c.id});
     });
   }
   if(searchCat==='all'||searchCat==='events'){
     Object.entries(state.sessions).forEach(([sess,evs])=>{
-      evs.forEach(e=>{if(match(e.m)||match(e.d))otherResults.push({src:`S${sess}·event`,main:e.m,det:e.d});});
+      evs.forEach((e,i)=>{if(match(e.m)||match(e.d))otherResults.push({src:`S${sess}·event`,main:e.m,det:e.d,type:'event',session:sess,idx:i});});
     });
   }
   if(searchCat==='all'||searchCat==='missions'){
     state.missions.forEach(m=>{
       if(m.status==='complete')return;
-      if(match(m.title)||match(m.body)||match(m.giver))otherResults.push({src:`mission·${m.status}`,main:m.title,det:m.body});
+      if(match(m.title)||match(m.body)||match(m.giver))otherResults.push({src:`mission·${m.status}`,main:m.title,det:m.body,type:'mission',id:m.id});
     });
   }
   if(searchCat==='all'||searchCat==='threads'){
     state.threads.forEach(t=>{
       if(t.resolved)return;
-      if(match(t.text))otherResults.push({src:`thread·open`,main:t.text,det:t.session});
+      if(match(t.text))otherResults.push({src:`thread·open`,main:t.text,det:t.session,type:'thread',id:t.id});
     });
   }
   if(searchCat==='all'||searchCat==='lore'){
-    state.lore.forEach(l=>{if(match(l.name)||match(l.body))otherResults.push({src:`lore·${l.type}`,main:l.name,det:l.body});});
+    state.lore.forEach(l=>{if(match(l.name)||match(l.body))otherResults.push({src:`lore·${l.type}`,main:l.name,det:l.body,type:'lore',id:l.id});});
   }
 
   const results=[...charResults,...otherResults];
   el.innerHTML=results.length?results.map(r=>`
-    <div class="sr"><div class="sr-src">${r.src}</div>
+    <div class="sr" onclick="openSearchResult('${r.type}',${r.id||0},'${r.session||''}',${r.idx||0})"><div class="sr-src">${r.src}</div>
     <div><div class="sr-main">${hl(r.main,q)}</div>${r.det?`<div class="sr-det">${hl(r.det,q)}</div>`:''}</div></div>`
   ).join(''):`<div class="empty-state">No results for "${q}".</div>`;
+}
+
+function openSearchResult(type,id,session,idx){
+  if(type==='character'){
+    openCharFullView(id);
+  } else if(type==='lore'){
+    openLorePanel(id);
+  } else if(type==='event'){
+    currentSession=session;
+    document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+    document.querySelector('.nav-tab').classList.add('active');
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    document.getElementById('panel-sessions').classList.add('active');
+    renderSessions();
+    setTimeout(()=>{const evs=document.querySelectorAll('#ev-list .event');if(evs[idx])evs[idx].scrollIntoView({behavior:'smooth',block:'center'});},100);
+  } else if(type==='mission'){
+    document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.nav-tab')[2].classList.add('active');
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    document.getElementById('panel-missions').classList.add('active');
+    missionFilter='all';renderMissions();
+  } else if(type==='thread'){
+    document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.nav-tab')[3].classList.add('active');
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    document.getElementById('panel-threads').classList.add('active');
+    threadFilter='all';renderThreads();
+  }
 }
 
 // ── DISCORD ──────────────────────────────────────
